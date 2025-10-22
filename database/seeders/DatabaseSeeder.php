@@ -15,11 +15,57 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Buat user dengan role Admin
+        User::create([
+            'nama' => 'Naufal',
+            'nomor_telepon' => '081234567890',
+            'email' => 'rakanaeru@gmail.com',
+            'password' => bcrypt('qwerty212'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Buat user dengan role Kasir
+        User::create([
+            'nama' => 'Kasir 1',
+            'nomor_telepon' => '081234567891',
+            'email' => 'kasir@kasir.com',
+            'password' => bcrypt('qwerty212'),
+            'role' => 'kasir',
+            'is_active' => true,
+        ]);
+
+        User::create([
+            'nama' => 'Kasir 2',
+            'nomor_telepon' => '081234567892',
+            'email' => 'kasir2@kasir.com',
+            'password' => bcrypt('kasir123'),
+            'role' => 'kasir',
+            'is_active' => true,
+        ]);
+
+        // Buat user dengan role Pengguna
+        User::create([
+            'nama' => 'Pengguna Biasa',
+            'nomor_telepon' => '081234567893',
+            'email' => 'pengguna@kasir.com',
+            'password' => bcrypt('qwerty212'),
+            'role' => 'pengguna',
+            'is_active' => true,
+        ]);
+
+        User::create([
+            'nama' => 'Pengguna 2',
+            'nomor_telepon' => '081234567894',
+            'email' => 'pengguna2@kasir.com',
+            'password' => bcrypt('pengguna123'),
+            'role' => 'pengguna',
+            'is_active' => true,
+        ]);
+
+        // Jalankan seeder produk
+        $this->call([
+            ProdukSeeder::class,
         ]);
     }
 }

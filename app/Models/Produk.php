@@ -13,7 +13,8 @@ class Produk extends Model
         'nama_produk',
         'deskripsi',
         'kategori',
-        'harga',
+        'harga_normal',
+        'harga_untung',
         'stok',
         'satuan',
         'gambar',
@@ -21,7 +22,8 @@ class Produk extends Model
     ];
 
     protected $casts = [
-        'harga' => 'decimal:2',
+        'harga_normal' => 'decimal:2',
+        'harga_untung' => 'decimal:2',
         'stok' => 'integer',
     ];
 }

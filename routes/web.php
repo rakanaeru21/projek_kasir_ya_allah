@@ -22,6 +22,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/produk', [ProdukController::class, 'index'])->name('admin.produk');
+        Route::post('/admin/produk', [ProdukController::class, 'store'])->name('admin.produk.store');
+        Route::get('/admin/produk/{id}', [ProdukController::class, 'show'])->name('admin.produk.show');
+        Route::put('/admin/produk/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
+        Route::delete('/admin/produk/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
     });
 
     Route::get('/kasir/dashboard', function () {

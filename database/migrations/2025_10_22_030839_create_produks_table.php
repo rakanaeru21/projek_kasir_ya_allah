@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nama_produk');
             $table->text('deskripsi')->nullable();
             $table->string('kategori');
-            $table->decimal('harga', 10, 2);
+            $table->decimal('harga_normal', 10, 2);
+            $table->decimal('harga_untung', 10, 2);
             $table->integer('stok')->default(0);
             $table->string('satuan')->default('pcs'); // pcs, kg, liter, dll
             $table->string('gambar')->nullable();
