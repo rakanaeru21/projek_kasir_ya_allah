@@ -1,10 +1,13 @@
-{{-- filepath: c:\xampp\htdocs\(yaallah_projek_kasir)\resources\views\admin\dashboard.blade.php --}}
+{{-- filepath: c:\xampp\htdocs\(yaallah_projek_kasir)\resources\views\admin\produk.blade.php --}}
+@php
+    /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Produk[] $produks */
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Kasir Yaallah</title>
+    <title>Data Produk - Kasir Yaallah</title>
     <style>
         /* ========================================
    CSS Variables - Custom Properties
@@ -290,7 +293,7 @@ body {
 
         <div class="nav-center">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? : '' }}">Produk</a>
+            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? 'active' : '' }}">Produk</a>
             <a href="#" class="nav-link">Riwayat</a>
             <a href="#" class="nav-link">Profil</a>
         </div>
@@ -311,6 +314,76 @@ body {
             <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
             <span class="info-badge">Administrator</span>
         </div>
+
+        <!-- Product Management Section -->
+        <div class="quick-actions">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; border: none; padding: 0;">Data Produk</h2>
+                <button class="action-btn" onclick="openModal()">+ Tambah Produk</button>
+            </div>
+
+            <!-- Product Table -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+                    <thead>
+                        <tr style="background: var(--color-primary); color: white;">
+                            <th style="padding: 16px; text-align: left;">No</th>
+                            <th style="padding: 16px; text-align: left;">Kode</th>
+                            <th style="padding: 16px; text-align: left;">Nama Produk</th>
+                            <th style="padding: 16px; text-align: left;">Kategori</th>
+                            <th style="padding: 16px; text-align: right;">Harga</th>
+                            <th style="padding: 16px; text-align: center;">Stok</th>
+                            <th style="padding: 16px; text-align: center;">Status</th>
+                            <th style="padding: 16px; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($produks ?? [] as $index => $produk)
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 16px; color: #333;">{{ $index + 1 }}</td>
+                            <td style="padding: 16px; color: #333; font-weight: 600;">{{ $produk->kode_produk }}</td>
+                            <td style="padding: 16px; color: #333;">{{ $produk->nama_produk }}</td>
+                            <td style="padding: 16px; color: #333;">{{ $produk->kategori }}</td>
+                            <td style="padding: 16px; color: #333; text-align: right;">Rp {{ number_format((float)$produk->harga, 0, ',', '.') }}</td>
+                            <td style="padding: 16px; color: #333; text-align: center;">{{ $produk->stok }} {{ $produk->satuan }}</td>
+                            <td style="padding: 16px; text-align: center;">
+                                <span style="padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                                    background: {{ $produk->status == 'aktif' ? '#4CAF50' : '#f44336' }}; color: white;">
+                                    {{ ucfirst($produk->status) }}
+                                </span>
+                            </td>
+                            <td style="padding: 16px; text-align: center;">
+                                <button onclick="editProduk({{ $produk->id }})" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Edit</button>
+                                <button onclick="hapusProduk({{ $produk->id }})" style="padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer;">Hapus</button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" style="padding: 40px; text-align: center; color: #999;">
+                                Belum ada data produk
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function openModal() {
+            alert('Fungsi tambah produk akan segera dibuat');
+        }
+
+        function editProduk(id) {
+            alert('Edit produk ID: ' + id);
+        }
+
+        function hapusProduk(id) {
+            if(confirm('Yakin ingin menghapus produk ini?')) {
+                alert('Hapus produk ID: ' + id);
+            }
+        }
+    </script>
 </body>
 </html>

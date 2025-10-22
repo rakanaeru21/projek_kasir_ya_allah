@@ -10,15 +10,15 @@
    CSS Variables - Custom Properties
    ======================================== */
 :root {
-    --color-primary: #07CB73;
-    --color-primary-light: #34D99A;
-    --color-primary-dark: #059A5A;
+    --color-primary: #cd4fb8;
+    --color-primary-light: #cd4fb8;
+    --color-primary-dark: #cd4fb8;
     --color-secondary: #FFE900;
     --color-secondary-light: #FFF654;
-    --color-bg: #FFFFFF;
-    --color-bg-alt: #F9FBFB;
-    --color-text: #1A1A1A;
-    --color-text-muted: #637381;
+    --color-bg: #1B3C53;
+    --color-bg-alt: #1B3C53;
+    --color-text: #F5F5F5;
+    --color-text-muted: #f5f5f5;
 }
 
 /* ========================================
@@ -111,7 +111,7 @@ input[type="password"]:focus {
     outline: none;
     border-color: var(--color-primary);
     background-color: var(--color-bg-alt);
-    box-shadow: 0 0 0 4px rgba(7, 203, 115, 0.1);
+    box-shadow: 0 0 0 4px rgba(203, 7, 193, 0.1);
 }
 
 input[type="email"]::placeholder,
@@ -158,23 +158,23 @@ input[type="password"]::placeholder {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(7, 203, 115, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 0, 123, 0.3);
 }
 
 .btn-login:hover {
     background: var(--color-primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(7, 203, 115, 0.4);
+    box-shadow: 0 6px 20px rgba(255, 0, 123, 0.3);
 }
 
 .btn-login:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(7, 203, 115, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 0, 123, 0.3);
 }
 
 .btn-login:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(7, 203, 115, 0.2);
+    box-shadow: 0 0 0 4px rgba(203, 7, 193, 0.2);
 }
 
 /* ========================================

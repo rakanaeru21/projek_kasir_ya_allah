@@ -10,15 +10,15 @@
    CSS Variables - Custom Properties
    ======================================== */
 :root {
-    --color-primary: #07CB73;
-    --color-primary-light: #34D99A;
-    --color-primary-dark: #059A5A;
+    --color-primary: #DD88CF;
+    --color-primary-light: #DD88CF;
+    --color-primary-dark: #DD88CF;
     --color-secondary: #FFE900;
     --color-secondary-light: #FFF654;
-    --color-bg: #FFFFFF;
-    --color-bg-alt: #F9FBFB;
-    --color-text: #1A1A1A;
-    --color-text-muted: #637381;
+    --color-bg: #1B3C53;
+    --color-bg-alt: #1B3C53;
+    --color-text: #F5F5F5;
+    --color-text-muted: #f5f5f5;
 }
 
 /* ========================================
@@ -91,7 +91,7 @@ body {
    Welcome Card - Hero Section
    ======================================== */
 .welcome-card {
-    background: white;
+    background: #234C6A;
     padding: 40px;
     border-radius: 16px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -123,7 +123,7 @@ body {
     font-size: 14px;
     font-weight: 600;
     margin-top: 12px;
-    box-shadow: 0 2px 8px rgba(7, 203, 115, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 0, 123, 0.3);
 }
 
 /* ========================================
@@ -137,7 +137,7 @@ body {
 }
 
 .feature-card {
-    background: white;
+    background: #234C6A;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
@@ -175,7 +175,7 @@ body {
    Profile Section - Account Information
    ======================================== */
 .profile-section {
-    background: white;
+    background: #234C6A;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
@@ -208,7 +208,7 @@ body {
 }
 
 .info-item:hover {
-    background: #E8F8F2;
+
     transform: translateX(5px);
 }
 
@@ -286,7 +286,7 @@ body {
 </head>
 <body>
     <nav class="navbar">
-        <h2>🛒 Kasir Yaallah</h2>
+        <h2>Kasir Yaallah</h2>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="btn-logout">Logout</button>
@@ -301,66 +301,5 @@ body {
             <span class="info-badge">{{ ucfirst(auth()->user()->role) }}</span>
         </div>
 
-        <!-- Features Grid -->
-        <div class="features-grid">
-            <div class="feature-card">
-                <span class="feature-icon">📦</span>
-                <h3>Lihat Produk</h3>
-                <p>Browse semua produk yang tersedia di toko kami</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🛍️</span>
-                <h3>Riwayat Belanja</h3>
-                <p>Lihat semua transaksi pembelian Anda</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">👤</span>
-                <h3>Profil Saya</h3>
-                <p>Kelola informasi akun Anda</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">💬</span>
-                <h3>Bantuan</h3>
-                <p>Hubungi customer service kami</p>
-            </div>
-        </div>
-
-        <!-- Profile Section -->
-        <div class="profile-section">
-            <h2>📋 Informasi Akun</h2>
-            <div class="profile-info">
-                <div class="info-item">
-                    <span class="info-label">Nama Lengkap:</span>
-                    <span class="info-value">{{ auth()->user()->nama }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Email:</span>
-                    <span class="info-value">{{ auth()->user()->email }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Nomor Telepon:</span>
-                    <span class="info-value">{{ auth()->user()->nomor_telepon }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Role:</span>
-                    <span class="info-value">{{ ucfirst(auth()->user()->role) }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Status Akun:</span>
-                    <span class="info-value">
-                        @if(auth()->user()->is_active)
-                            <span class="status-active">✓ Aktif</span>
-                        @else
-                            <span class="status-inactive">✗ Tidak Aktif</span>
-                        @endif
-                    </span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Terdaftar Sejak:</span>
-                    <span class="info-value">{{ auth()->user()->created_at->format('d M Y') }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
