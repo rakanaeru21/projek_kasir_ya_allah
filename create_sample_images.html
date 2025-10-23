@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Sample Images</title>
+</head>
+<body>
+    <canvas id="canvas" width="300" height="300" style="border: 1px solid #000;"></canvas>
+    <br><br>
+    <button onclick="createImage('Indomie Goreng', '#ff6b35', 'indomie.jpg')">Create Indomie</button>
+    <button onclick="createImage('Aqua 600ml', '#0066cc', 'aqua.jpg')">Create Aqua</button>
+    <button onclick="createImage('Beras Premium', '#ffcc00', 'beras.jpg')">Create Beras</button>
+    <button onclick="createImage('Minyak Goreng', '#ff9900', 'minyak.jpg')">Create Minyak</button>
+    <button onclick="createImage('Gula Pasir', '#ffffff', 'gula.jpg')">Create Gula</button>
+    <button onclick="createImage('Teh Botol', '#006600', 'teh.jpg')">Create Teh</button>
+    <button onclick="createImage('Susu Ultra', '#3366ff', 'susu.jpg')">Create Susu</button>
+    <button onclick="createImage('Kopi Kapal Api', '#663300', 'kopi.jpg')">Create Kopi</button>
+
+    <div id="downloads"></div>
+
+    <script>
+        function createImage(text, bgColor, filename) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Set background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add text
+            ctx.fillStyle = bgColor === '#ffffff' ? '#000000' : '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Split text into multiple lines if needed
+            const lines = text.split(' ');
+            const lineHeight = 30;
+            const startY = canvas.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+
+            lines.forEach((line, index) => {
+                ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
+            });
+
+            // Convert to blob and create download link
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.textContent = `Download ${filename}`;
+                a.style.display = 'block';
+                a.style.margin = '10px';
+
+                document.getElementById('downloads').appendChild(a);
+
+                // Auto download
+                a.click();
+            }, 'image/jpeg', 0.8);
+        }
+    </script>
+</body>
+</html>

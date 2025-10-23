@@ -19,7 +19,7 @@ class ProdukSeeder extends Seeder
                 'harga_untung' => 3500,
                 'stok' => 100,
                 'satuan' => 'pcs',
-                'gambar' => null,
+                'gambar' => 'indomie.svg',
                 'status' => 'aktif'
             ],
             [
@@ -31,7 +31,7 @@ class ProdukSeeder extends Seeder
                 'harga_untung' => 4000,
                 'stok' => 50,
                 'satuan' => 'botol',
-                'gambar' => null,
+                'gambar' => 'aqua.svg',
                 'status' => 'aktif'
             ],
             [
@@ -43,54 +43,54 @@ class ProdukSeeder extends Seeder
                 'harga_untung' => 15000,
                 'stok' => 30,
                 'satuan' => 'kg',
-                'gambar' => null,
+                'gambar' => 'beras.svg',
                 'status' => 'aktif'
             ],
             [
                 'kode_produk' => 'PRD004',
+                'nama_produk' => 'Manga Boruto',
+                'deskripsi' => 'Komik Boruto volume terbaru',
+                'kategori' => 'Buku',
+                'harga_normal' => 35000,
+                'harga_untung' => 40000,
+                'stok' => 15,
+                'satuan' => 'pcs',
+                'gambar' => '1761127260_boruto.jpg',
+                'status' => 'aktif'
+            ],
+            [
+                'kode_produk' => 'PRD005',
+                'nama_produk' => 'Blue Lock Manga',
+                'deskripsi' => 'Manga Blue Lock Volume 1',
+                'kategori' => 'Buku',
+                'harga_normal' => 32000,
+                'harga_untung' => 37000,
+                'stok' => 12,
+                'satuan' => 'pcs',
+                'gambar' => '1761127845_Blue_Lock_Vol_1.jpg',
+                'status' => 'aktif'
+            ],
+            [
+                'kode_produk' => 'PRD006',
+                'nama_produk' => 'Slam Dunk Manga',
+                'deskripsi' => 'Manga klasik Slam Dunk',
+                'kategori' => 'Buku',
+                'harga_normal' => 38000,
+                'harga_untung' => 43000,
+                'stok' => 8,
+                'satuan' => 'pcs',
+                'gambar' => '1761127074_Slam_Dunk_(manga)_1.png',
+                'status' => 'aktif'
+            ],
+            [
+                'kode_produk' => 'PRD007',
                 'nama_produk' => 'Minyak Goreng',
-                'deskripsi' => 'Minyak goreng kemasan',
+                'deskripsi' => 'Minyak goreng kemasan 1 liter',
                 'kategori' => 'Sembako',
                 'harga_normal' => 14000,
                 'harga_untung' => 16000,
                 'stok' => 25,
                 'satuan' => 'liter',
-                'gambar' => null,
-                'status' => 'aktif'
-            ],
-            [
-                'kode_produk' => 'PRD005',
-                'nama_produk' => 'Gula Pasir',
-                'deskripsi' => 'Gula pasir putih',
-                'kategori' => 'Sembako',
-                'harga_normal' => 12000,
-                'harga_untung' => 14000,
-                'stok' => 40,
-                'satuan' => 'kg',
-                'gambar' => null,
-                'status' => 'aktif'
-            ],
-            [
-                'kode_produk' => 'PRD006',
-                'nama_produk' => 'Teh Botol Sosro',
-                'deskripsi' => 'Minuman teh kemasan',
-                'kategori' => 'Minuman',
-                'harga_normal' => 5000,
-                'harga_untung' => 6000,
-                'stok' => 60,
-                'satuan' => 'botol',
-                'gambar' => null,
-                'status' => 'aktif'
-            ],
-            [
-                'kode_produk' => 'PRD007',
-                'nama_produk' => 'Susu Ultra Milk',
-                'deskripsi' => 'Susu UHT kemasan kotak',
-                'kategori' => 'Minuman',
-                'harga_normal' => 8000,
-                'harga_untung' => 10000,
-                'stok' => 35,
-                'satuan' => 'pack',
                 'gambar' => null,
                 'status' => 'aktif'
             ],

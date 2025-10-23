@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\PromoController;
+use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,9 +37,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
     });
 
+    // Kasir routes
     Route::get('/kasir/dashboard', function () {
         return view('kasir.dashboard');
     })->name('kasir.dashboard');
+
+    Route::get('/kasir/transaksi', [TransaksiController::class, 'index'])->name('kasir.transaksi');
+    Route::post('/kasir/transaksi', [TransaksiController::class, 'store'])->name('kasir.transaksi.store');
+    Route::get('/kasir/transaksi/search', [TransaksiController::class, 'searchProduct'])->name('kasir.transaksi.search');
+    Route::get('/kasir/transaksi/product/{id}', [TransaksiController::class, 'getProduct'])->name('kasir.transaksi.product');
+    Route::post('/kasir/transaksi/check-stock', [TransaksiController::class, 'checkStock'])->name('kasir.transaksi.check-stock');
 
     Route::get('/pengguna/dashboard', function () {
         return view('pengguna.dashboard');

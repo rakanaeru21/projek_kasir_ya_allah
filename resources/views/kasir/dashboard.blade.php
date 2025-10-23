@@ -5,20 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Kasir - Kasir Yaallah</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
    CSS Variables - Custom Properties
    ======================================== */
 :root {
-    --color-primary: #07CB73;
-    --color-primary-light: #34D99A;
-    --color-primary-dark: #059A5A;
+    --color-primary: #cd4fb8;
+    --color-primary-light: #e06dd0;
+    --color-primary-dark: #b3329d;
     --color-secondary: #FFE900;
     --color-secondary-light: #FFF654;
-    --color-bg: #FFFFFF;
-    --color-bg-alt: #F9FBFB;
-    --color-text: #1A1A1A;
-    --color-text-muted: #637381;
+    --color-bg: #1B3C53;
+    --color-bg-alt: #152e42;
+    --color-text: #F5F5F5;
+    --color-text-muted: #b8c5d0;
+    --sidebar-width: 280px;
+    --card-bg: #234a65;
+    --card-hover-bg: #2a5672;
 }
 
 /* ========================================
@@ -37,27 +41,190 @@ body {
 }
 
 /* ========================================
+   Layout Structure
+   ======================================== */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========================================
+   Sidebar Navigation
+   ======================================== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #0f2332 0%, #1B3C53 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid rgba(205, 79, 184, 0.2);
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+    text-align: center;
+    background: rgba(205, 79, 184, 0.1);
+}
+
+.sidebar-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text);
+}
+
+.sidebar-header p {
+    font-size: 14px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+.sidebar-menu {
+    padding: 20px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(205, 79, 184, 0.15);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item.active {
+    background: rgba(205, 79, 184, 0.2);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item:hover i {
+    color: var(--color-primary-light);
+}
+
+.menu-item.active i {
+    color: var(--color-primary);
+}
+
+.menu-item i {
+    font-size: 18px;
+    margin-right: 16px;
+    width: 24px;
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+}
+
+.menu-item span {
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    border-top: 1px solid rgba(205, 79, 184, 0.2);
+    background: rgba(15, 35, 50, 0.5);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+}
+
+.user-details h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-text);
+}
+
+.user-details p {
+    font-size: 12px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--color-bg-alt);
+}
+
+/* ========================================
    Navbar - Top Navigation
    ======================================== */
 .navbar {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
+    background: var(--card-bg);
+    color: var(--color-text);
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text);
+    cursor: pointer;
+    margin-right: 16px;
 }
 
 .navbar h2 {
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.5px;
+    color: var(--color-text);
 }
 
 .btn-logout {
-    background: white;
-    color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
     padding: 10px 24px;
     border: none;
     border-radius: 8px;
@@ -65,13 +232,13 @@ body {
     font-weight: 600;
     font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
 }
 
 .btn-logout:hover {
-    background: var(--color-bg-alt);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
 }
 
 .btn-logout:active {
@@ -91,12 +258,13 @@ body {
    Welcome Card - Hero Section
    ======================================== */
 .welcome-card {
-    background: white;
+    background: var(--card-bg);
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     margin-bottom: 30px;
     border-left: 6px solid var(--color-primary);
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .welcome-card h1 {
@@ -115,7 +283,7 @@ body {
 }
 
 .welcome-card p strong {
-    color: var(--color-primary);
+    color: var(--color-primary-light);
     font-weight: 600;
 }
 
@@ -128,7 +296,7 @@ body {
     font-size: 14px;
     font-weight: 600;
     margin-top: 12px;
-    box-shadow: 0 2px 8px rgba(7, 203, 115, 0.3);
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
 }
 
 /* ========================================
@@ -142,17 +310,19 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     border-bottom: 4px solid var(--color-primary);
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.3);
+    background: var(--card-hover-bg);
 }
 
 .stat-card h3 {
@@ -167,7 +337,7 @@ body {
 .stat-number {
     font-size: 36px;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-light);
     line-height: 1;
 }
 
@@ -175,11 +345,12 @@ body {
    Quick Actions - Action Buttons
    ======================================== */
 .quick-actions {
-    background: white;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     margin-top: 30px;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .quick-actions h2 {
@@ -207,13 +378,14 @@ body {
     font-weight: 600;
     font-size: 15px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(7, 203, 115, 0.3);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
     text-align: center;
 }
 
 .action-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(7, 203, 115, 0.4);
+    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.6);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
 }
 
 .action-btn:active {
@@ -221,13 +393,45 @@ body {
 }
 
 /* ========================================
+   Mobile Sidebar Overlay
+   ======================================== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+/* ========================================
    Responsive Design - Mobile Optimization
    ======================================== */
 @media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
     .navbar {
         padding: 16px 20px;
-        flex-direction: column;
-        gap: 16px;
     }
 
     .navbar h2 {
@@ -259,48 +463,147 @@ body {
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <h2>💰 Kasir Yaallah - Kasir Panel</h2>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn-logout">Logout</button>
-        </form>
-    </nav>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-cash-register"></i> Kasir Yaallah</h2>
+                <p>Kasir Panel</p>
+            </div>
 
-    <div class="container">
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <h1>👋 Selamat Datang, {{ auth()->user()->nama }}!</h1>
-            <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
-            <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
-            <span class="info-badge">Kasir</span>
-        </div>
+             <div class="sidebar-menu">
+                <a href="{{ route('kasir.dashboard') }}" class="menu-item active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('kasir.transaksi') }}" class="menu-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Transaksi</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-boxes"></i>
+                    <span>Produk</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pelanggan</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
 
-        <!-- Statistics Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Transaksi Hari Ini</h3>
-                <div class="stat-number">0</div>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ substr(auth()->user()->nama, 0, 1) }}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ auth()->user()->nama }}</h4>
+                        <p>{{ ucfirst(auth()->user()->role) }}</p>
+                    </div>
+                </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="width: 100%;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </div>
-            <div class="stat-card">
-                <h3>Penjualan Hari Ini</h3>
-                <div class="stat-number">Rp 0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Item Terjual</h3>
-                <div class="stat-number">0</div>
-            </div>
-        </div>
+        </nav>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <h2>⚡ Quick Actions</h2>
-            <div class="action-buttons">
-                <button class="action-btn">🛒 Transaksi Baru</button>
-                <button class="action-btn">📦 Lihat Produk</button>
-                <button class="action-btn">📋 Riwayat Transaksi</button>
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h2>Dashboard Kasir</h2>
+                </div>
+                <div class="navbar-right">
+                    <span style="margin-right: 20px; color: var(--color-text-muted);">
+                        {{ date('l, d F Y') }}
+                    </span>
+                </div>
+            </nav>
+
+            <div class="container">
+                <!-- Welcome Card -->
+                <div class="welcome-card">
+                    <h1><i class="fas fa-hand-wave"></i> Selamat Datang, {{ auth()->user()->nama }}!</h1>
+                    <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
+                    <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
+                    <span class="info-badge"><i class="fas fa-check-circle"></i> Kasir Active</span>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Transaksi Hari Ini</h3>
+                        <div class="stat-number">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Penjualan Hari Ini</h3>
+                        <div class="stat-number">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Item Terjual</h3>
+                        <div class="stat-number">0</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
+                    <div class="action-buttons">
+                        <a href="{{ route('kasir.transaksi') }}" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-shopping-cart"></i> Transaksi Baru
+                        </a>
+                        <button class="action-btn">
+                            <i class="fas fa-eye"></i> Lihat Produk
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-chart-bar"></i> Laporan Hari Ini
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-user-friends"></i> Kelola Pelanggan
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
+
+    <script>
+        // Sidebar Toggle for Mobile
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Close sidebar on window resize if desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
