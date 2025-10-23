@@ -63,9 +63,10 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Jalankan seeder produk
+        // Jalankan seeder produk dan promo
         $this->call([
             ProdukSeeder::class,
+            PromoSeeder::class,
         ]);
     }
 }

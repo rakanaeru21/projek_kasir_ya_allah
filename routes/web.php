@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\PromoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,6 +27,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/produk/{id}', [ProdukController::class, 'show'])->name('admin.produk.show');
         Route::put('/admin/produk/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
         Route::delete('/admin/produk/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
+
+        // Promo routes
+        Route::get('/admin/promo', [PromoController::class, 'index'])->name('admin.promo');
+        Route::post('/admin/promo', [PromoController::class, 'store'])->name('admin.promo.store');
+        Route::get('/admin/promo/{promo}', [PromoController::class, 'show'])->name('admin.promo.show');
+        Route::put('/admin/promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
+        Route::delete('/admin/promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
     });
 
     Route::get('/kasir/dashboard', function () {

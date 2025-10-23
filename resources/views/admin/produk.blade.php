@@ -802,7 +802,7 @@ body {
         <div class="nav-center">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>
             <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? 'active' : '' }}">Produk</a>
-            <a href="#" class="nav-link">Riwayat</a>
+            <a href="{{ route('admin.promo') }}" class="nav-link {{ request()->routeIs('admin.promo') ? 'active' : '' }}">Promo</a>
             <a href="#" class="nav-link">Profil</a>
         </div>
 
@@ -815,13 +815,6 @@ body {
     </nav>
 
     <div class="container">
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <h1>Selamat Datang, {{ auth()->user()->nama }}!</h1>
-            <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
-            <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
-            <span class="info-badge">Administrator</span>
-        </div>
 
         <!-- Product Management Section -->
         <div class="quick-actions">
@@ -830,10 +823,12 @@ body {
                     <h2 style="margin: 0; border: none; padding: 0;">📦 Data Produk</h2>
                     <p style="color: var(--color-text-light); font-size: 14px; margin-top: 4px;">Kelola semua produk Anda di sini</p>
                 </div>
-                <button class="action-btn" onclick="openModal()">
-                    <span style="font-size: 18px;">+</span>
-                    Tambah Produk
-                </button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="action-btn" onclick="openModal()">
+                        <span style="font-size: 18px;">+</span>
+                        Tambah Produk
+                    </button>
+                </div>
             </div>
 
             <!-- Product Table -->

@@ -233,6 +233,8 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px #dc72cb;
     text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .action-btn:hover {
@@ -290,8 +292,8 @@ body {
 
         <div class="nav-center">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? : '' }}">Produk</a>
-            <a href="#" class="nav-link">Riwayat</a>
+            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? 'active' : '' }}">Produk</a>
+            <a href="{{ route('admin.promo') }}" class="nav-link {{ request()->routeIs('admin.promo') ? 'active' : '' }}">Promo</a>
             <a href="#" class="nav-link">Profil</a>
         </div>
 
@@ -310,6 +312,17 @@ body {
             <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
             <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
             <span class="info-badge">Administrator</span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Menu Utama</h2>
+            <div class="action-buttons">
+                <a href="{{ route('admin.produk') }}" class="action-btn">📦 Kelola Produk</a>
+                <a href="{{ route('admin.promo') }}" class="action-btn">🎯 Kelola Promo</a>
+                <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">📊 Laporan</button>
+                <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">⚙️ Pengaturan</button>
+            </div>
         </div>
     </div>
 </body>
