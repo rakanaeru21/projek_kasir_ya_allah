@@ -320,12 +320,19 @@
             transition: all 0.3s ease;
             border: 2px solid transparent;
             text-align: center;
+            position: relative;
+            overflow: visible;
         }
 
         .product-card:hover {
             border-color: var(--color-primary);
             transform: translateY(-2px);
             background: var(--card-hover-bg);
+            box-shadow: 0 4px 15px rgba(205, 79, 184, 0.2);
+        }
+
+        .product-card:hover .product-description {
+            display: block !important;
         }
 
         .product-image {
@@ -747,25 +754,80 @@
 
                         <!-- Search Box -->
                         <div class="search-box">
-                            <input type="text" class="search-input" placeholder="Cari produk..." id="searchProduct">
+                            <input type="text" class="search-input" placeholder="Cari nama produk, kode, atau kategori..." id="searchProduct">
                             <i class="fas fa-search search-icon"></i>
                         </div>
 
                         <!-- Product Grid -->
                         <div class="product-grid" id="productGrid">
                             @forelse($produks as $produk)
-                                <div class="product-card" onclick="addToCart({{ $produk->id }}, '{{ $produk->nama_produk }}', {{ $produk->harga_untung }}, {{ $produk->stok }})" data-name="{{ strtolower($produk->nama_produk) }}">
+                                <div class="product-card" onclick="addToCart({{ $produk->id }}, '{{ $produk->nama_produk }}', {{ $produk->harga_untung }}, {{ $produk->stok }})"
+                                     data-name="{{ strtolower($produk->nama_produk) }}"
+                                     data-code="{{ strtolower($produk->kode_produk) }}"
+                                     data-category="{{ strtolower($produk->kategori) }}">
+
+                                    <!-- Product Image -->
                                     <div class="product-image">
-                                        @if($produk->gambar)
-                                            <img src="{{ asset('uploads/produk/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        @if($produk->gambar && file_exists(public_path($produk->gambar)))
+                                            <img src="{{ asset($produk->gambar) }}"
+                                                 alt="{{ $produk->nama_produk }}"
+                                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             <i class="fas fa-box" style="display: none;"></i>
                                         @else
                                             <i class="fas fa-box"></i>
                                         @endif
                                     </div>
-                                    <div class="product-name">{{ $produk->nama_produk }}</div>
-                                    <div class="product-price">Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}</div>
-                                    <div class="product-stock">Stok: {{ $produk->stok }}</div>
+
+                                    <!-- Product Code -->
+                                    <div class="product-code" style="font-size: 11px; color: var(--color-text-muted); margin-bottom: 4px;">
+                                        {{ $produk->kode_produk }}
+                                    </div>
+
+                                    <!-- Product Name -->
+                                    <div class="product-name" title="{{ $produk->nama_produk }}">{{ $produk->nama_produk }}</div>
+
+                                    <!-- Product Category -->
+                                    <div class="product-category" style="font-size: 11px; color: var(--color-primary-light); margin-bottom: 6px; background: rgba(205, 79, 184, 0.1); padding: 2px 6px; border-radius: 10px; display: inline-block;">
+                                        {{ $produk->kategori }}
+                                    </div>
+
+                                    <!-- Price Information -->
+                                    <div class="price-info" style="margin-bottom: 8px;">
+                                        @if($produk->harga_normal != $produk->harga_untung)
+                                            <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
+                                                Rp {{ number_format($produk->harga_normal, 0, ',', '.') }}
+                                            </div>
+                                        @endif
+                                        <div class="product-price">Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}</div>
+                                        <div class="product-unit" style="font-size: 11px; color: var(--color-text-muted);">
+                                            per {{ $produk->satuan }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Stock Information -->
+                                    <div class="stock-info" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="product-stock" style="font-size: 12px;">
+                                            <span style="color: var(--color-text-muted);">Stok:</span>
+                                            <span style="color: {{ $produk->stok > 10 ? 'var(--success-color)' : ($produk->stok > 0 ? 'var(--warning-color)' : 'var(--error-color)') }}; font-weight: 600;">
+                                                {{ $produk->stok }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Status Badge -->
+                                        <div class="status-badge" style="font-size: 10px; padding: 2px 6px; border-radius: 8px;
+                                             background: {{ $produk->status == 'aktif' ? 'var(--success-color)' : 'var(--error-color)' }};
+                                             color: white;">
+                                            {{ ucfirst($produk->status) }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Hover Description (Optional) -->
+                                    @if($produk->deskripsi)
+                                        <div class="product-description" style="display: none; position: absolute; bottom: -10px; left: 0; right: 0; background: var(--color-bg); padding: 8px; border-radius: 6px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 10;">
+                                            {{ Str::limit($produk->deskripsi, 80) }}
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
                                 <div class="empty-cart" style="grid-column: 1 / -1;">
@@ -870,7 +932,12 @@
 
             productCards.forEach(card => {
                 const productName = card.getAttribute('data-name');
-                if (productName.includes(searchTerm)) {
+                const productCode = card.getAttribute('data-code');
+                const productCategory = card.getAttribute('data-category');
+
+                if (productName.includes(searchTerm) ||
+                    productCode.includes(searchTerm) ||
+                    productCategory.includes(searchTerm)) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
