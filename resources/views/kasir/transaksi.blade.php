@@ -322,6 +322,7 @@
             text-align: center;
             position: relative;
             overflow: visible;
+            user-select: none;
         }
 
         .product-card:hover {
@@ -329,6 +330,11 @@
             transform: translateY(-2px);
             background: var(--card-hover-bg);
             box-shadow: 0 4px 15px rgba(205, 79, 184, 0.2);
+        }
+
+        .product-card:active {
+            transform: translateY(0px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
         }
 
         .product-card:hover .product-description {
@@ -761,10 +767,16 @@
                         <!-- Product Grid -->
                         <div class="product-grid" id="productGrid">
                             @forelse($produks as $produk)
-                                <div class="product-card" onclick="addToCart({{ $produk->id }}, '{{ $produk->nama_produk }}', {{ $produk->harga_untung }}, {{ $produk->stok }})"
+                                <div class="product-card"
+                                     onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->harga_untung }}, {{ $produk->stok }})"
+                                     data-product-id="{{ $produk->id }}"
+                                     data-product-name="{{ $produk->nama_produk }}"
+                                     data-product-price="{{ $produk->harga_untung }}"
+                                     data-product-stock="{{ $produk->stok }}"
                                      data-name="{{ strtolower($produk->nama_produk) }}"
                                      data-code="{{ strtolower($produk->kode_produk) }}"
-                                     data-category="{{ strtolower($produk->kategori) }}">
+                                     data-category="{{ strtolower($produk->kategori) }}"
+                                     title="Klik untuk menambahkan ke keranjang">
 
                                     <!-- Product Image -->
                                     <div class="product-image">
@@ -786,6 +798,11 @@
 
                                     <!-- Product Name -->
                                     <div class="product-name" title="{{ $produk->nama_produk }}">{{ $produk->nama_produk }}</div>
+
+                                    <!-- Click indicator -->
+                                    <div style="position: absolute; top: 8px; right: 8px; background: var(--color-primary); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0.8;">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
 
                                     <!-- Product Category -->
                                     <div class="product-category" style="font-size: 11px; color: var(--color-primary-light); margin-bottom: 6px; background: rgba(205, 79, 184, 0.1); padding: 2px 6px; border-radius: 10px; display: inline-block;">
@@ -910,6 +927,30 @@
         let cart = [];
         let cartTotal = 0;
 
+        // Test function to ensure JavaScript is working
+        console.log('JavaScript loaded successfully!');
+
+        // Test function - you can call this from browser console: testAddToCart()
+        window.testAddToCart = function() {
+            console.log('Testing addToCart function...');
+            addToCart(1, 'Test Product', 5000, 10);
+        };
+
+        // Debug function to check product cards
+        window.debugProductCards = function() {
+            const cards = document.querySelectorAll('.product-card');
+            console.log('Product cards found:', cards.length);
+            cards.forEach((card, index) => {
+                console.log(`Card ${index + 1}:`, {
+                    onclick: card.getAttribute('onclick'),
+                    productId: card.getAttribute('data-product-id'),
+                    productName: card.getAttribute('data-product-name'),
+                    productPrice: card.getAttribute('data-product-price'),
+                    productStock: card.getAttribute('data-product-stock')
+                });
+            });
+        };
+
         // Sidebar Toggle for Mobile
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
@@ -947,25 +988,37 @@
 
         // Add to cart function
         function addToCart(id, name, price, stock) {
+            console.log('Adding to cart:', { id, name, price, stock });
+
             // Check if item already exists in cart
             const existingItem = cart.find(item => item.id === id);
 
             if (existingItem) {
                 if (existingItem.quantity < stock) {
                     existingItem.quantity += 1;
+                    console.log('Item quantity updated:', existingItem);
+
+                    // Show confirmation feedback
+                    showToast(`${name} ditambahkan ke keranjang (${existingItem.quantity})`, 'success');
                 } else {
-                    alert('Stok tidak mencukupi!');
+                    alert(`Stok tidak mencukupi! Stok tersedia: ${stock}`);
                     return;
                 }
             } else {
                 if (stock > 0) {
-                    cart.push({
+                    const newItem = {
                         id: id,
                         name: name,
                         price: price,
                         quantity: 1,
                         stock: stock
-                    });
+                    };
+                    cart.push(newItem);
+                    console.log('New item added to cart:', newItem);
+                    console.log('Cart now contains:', cart);
+
+                    // Show confirmation feedback
+                    showToast(`${name} ditambahkan ke keranjang`, 'success');
                 } else {
                     alert('Produk habis!');
                     return;
@@ -973,6 +1026,59 @@
             }
 
             updateCartDisplay();
+        }
+
+        // Simple toast notification function
+        function showToast(message, type = 'info') {
+            // Remove existing toast
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'var(--success-color)' : 'var(--color-primary)'};
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    font-size: 14px;
+                    font-weight: 500;
+                    max-width: 300px;
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                ">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.querySelector('div').style.transform = 'translateX(0)';
+            }, 100);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.querySelector('div').style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
         }
 
         // Update cart display
@@ -1121,24 +1227,137 @@
                 return;
             }
 
+            let cashAmount = 0;
             if (paymentMethod === 'cash') {
-                const cashAmount = parseFloat(document.querySelector('input[name="cash_amount"]').value) || 0;
+                cashAmount = parseFloat(document.querySelector('input[name="cash_amount"]').value) || 0;
                 if (cashAmount < cartTotal) {
                     alert('Jumlah bayar tidak mencukupi!');
                     return;
                 }
             }
 
-            // Here you would typically send the data to your backend
             if (confirm('Proses transaksi ini?')) {
-                // Simulate transaction processing
-                alert('Transaksi berhasil diproses!');
+                // Disable button to prevent double submission
+                const submitBtn = document.querySelector('.btn-primary');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-                // Reset form and cart
-                cart = [];
-                document.getElementById('checkoutForm').reset();
-                updateCartDisplay();
+                // First check stock availability
+                checkStockAvailability()
+                .then(stockValid => {
+                    if (!stockValid) {
+                        throw new Error('Stok produk tidak mencukupi. Silakan periksa kembali keranjang Anda.');
+                    }
+
+                    return processTransactionRequest();
+                })
+                .catch(error => {
+                    alert(error.message);
+                })
+                .finally(() => {
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Proses Pembayaran';
+                });
             }
+        }
+
+        // Check stock availability before processing transaction
+        function checkStockAvailability() {
+            return fetch('{{ route("kasir.transaksi.check-stock") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    items: cart.map(item => ({
+                        id: item.id,
+                        quantity: item.quantity
+                    })),
+                    _token: '{{ csrf_token() }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.valid && data.errors && data.errors.length > 0) {
+                    let errorMsg = 'Stok tidak mencukupi untuk:\n';
+                    data.errors.forEach(error => {
+                        errorMsg += `- ${error.product_name}: diminta ${error.requested}, tersedia ${error.available}\n`;
+                    });
+                    throw new Error(errorMsg);
+                }
+                return data.valid;
+            });
+        }
+
+        // Process transaction request
+        function processTransactionRequest() {
+            const customerName = document.querySelector('input[name="customer_name"]').value;
+            const paymentMethod = document.querySelector('select[name="payment_method"]').value;
+            const cashAmount = paymentMethod === 'cash' ? parseFloat(document.querySelector('input[name="cash_amount"]').value) || 0 : 0;
+
+            // Prepare transaction data
+            const subtotal = cartTotal / 1.1; // Remove tax to get subtotal
+            const tax = cartTotal - subtotal;
+
+            const transactionData = {
+                customer_name: customerName,
+                payment_method: paymentMethod,
+                cash_amount: paymentMethod === 'cash' ? cashAmount : null,
+                items: cart.map(item => ({
+                    id: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                subtotal: subtotal,
+                tax: tax,
+                total_amount: cartTotal,
+                _token: '{{ csrf_token() }}'
+            };
+
+            // Send to backend
+            return fetch('{{ route("kasir.transaksi.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(transactionData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Show success message with transaction details
+                    let successMessage = 'Transaksi berhasil diproses!\n';
+                    successMessage += 'Kode Transaksi: ' + (data.kode_transaksi || '') + '\n';
+                    successMessage += 'Total: Rp ' + number_format(data.total_amount || 0);
+
+                    if (data.change_amount && data.change_amount > 0) {
+                        successMessage += '\nKembalian: Rp ' + number_format(data.change_amount);
+                    }
+
+                    alert(successMessage);
+
+                    // Reset form and cart
+                    cart = [];
+                    document.getElementById('checkoutForm').reset();
+                    document.getElementById('changeAmount').textContent = '';
+                    updateCartDisplay();
+
+                    // Refresh product grid to update stock
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Transaksi gagal diproses');
+                }
+            });
         }
 
         // Number format helper
@@ -1156,7 +1375,57 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing cart...');
             updateCartDisplay();
+
+            const productCards = document.querySelectorAll('.product-card');
+            console.log('Found', productCards.length, 'product cards');
+
+            // Alternative event listener for product cards (in case onclick doesn't work)
+            productCards.forEach((card, index) => {
+                console.log(`Setting up card ${index + 1}:`, card.getAttribute('onclick'));
+
+                card.addEventListener('click', function(e) {
+                    console.log('Card clicked via event listener:', this);
+
+                    // Try onclick attribute first
+                    const onclickAttr = this.getAttribute('onclick');
+                    if (onclickAttr) {
+                        console.log('Executing onclick:', onclickAttr);
+                        try {
+                            eval(onclickAttr);
+                            return;
+                        } catch (error) {
+                            console.error('Error executing onclick:', error);
+                        }
+                    }
+
+                    // Fallback to data attributes
+                    const productId = parseInt(this.getAttribute('data-product-id'));
+                    const productName = this.getAttribute('data-product-name');
+                    const productPrice = parseFloat(this.getAttribute('data-product-price'));
+                    const productStock = parseInt(this.getAttribute('data-product-stock'));
+
+                    console.log('Using data attributes:', { productId, productName, productPrice, productStock });
+
+                    if (productId && productName && productPrice !== null && productStock !== null) {
+                        addToCart(productId, productName, productPrice, productStock);
+                    } else {
+                        console.error('Missing product data attributes');
+                    }
+                });
+
+                // Add visual feedback on mouseover
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderColor = 'var(--color-primary)';
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'transparent';
+                    this.style.transform = 'translateY(0)';
+                });
+            });
         });
     </script>
 </body>
