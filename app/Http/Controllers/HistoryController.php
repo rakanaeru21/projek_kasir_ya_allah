@@ -38,6 +38,23 @@ class HistoryController extends Controller
     }
 
     /**
+     * Cetak struk transaksi
+     */
+    public function printReceipt($id)
+    {
+        // Hanya kasir yang bisa mengakses
+        if (Auth::user()->role !== 'kasir') {
+            abort(403, 'Unauthorized');
+        }
+
+        // Ambil detail transaksi
+        $transaksi = Transaksi::with(['details.produk', 'user'])->findOrFail($id);
+
+        // Return view khusus untuk print
+        return view('kasir.print-receipt', compact('transaksi'));
+    }
+
+    /**
      * Helper function untuk konversi status database ke status display
      */
     private function convertStatus($dbStatus)

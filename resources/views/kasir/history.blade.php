@@ -363,6 +363,26 @@ body {
     box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
 }
 
+.btn-print {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-print:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
 /* ========================================
    Pagination Styles
    ======================================== */
@@ -601,6 +621,9 @@ body {
                                     <td>
                                         <a href="{{ route('kasir.history.show', $transaksi->id) }}" class="btn-detail">
                                             <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                        <a href="{{ route('kasir.history.print', $transaksi->id) }}" class="btn-print" target="_blank" style="margin-left: 5px;">
+                                            <i class="fas fa-print"></i> Cetak
                                         </a>
                                     </td>
                                 </tr>

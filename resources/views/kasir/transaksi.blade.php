@@ -1393,6 +1393,12 @@
 
                     alert(successMessage);
 
+                    // Ask if user wants to print receipt
+                    if (confirm('Apakah Anda ingin mencetak struk transaksi?')) {
+                        // Open print page in new window
+                        window.open('/kasir/history/' + data.transaksi_id + '/print', '_blank');
+                    }
+
                     // Reset form and cart
                     cart = [];
                     document.getElementById('checkoutForm').reset();

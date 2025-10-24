@@ -48,10 +48,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir/transaksi/search', [TransaksiController::class, 'searchProduct'])->name('kasir.transaksi.search');
     Route::get('/kasir/transaksi/product/{id}', [TransaksiController::class, 'getProduct'])->name('kasir.transaksi.product');
     Route::post('/kasir/transaksi/check-stock', [TransaksiController::class, 'checkStock'])->name('kasir.transaksi.check-stock');
+    Route::get('/kasir/transaksi/{id}/print', [TransaksiController::class, 'printReceipt'])->name('kasir.transaksi.print');
 
     // History routes
     Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
     Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
+    Route::get('/kasir/history/{id}/print', [\App\Http\Controllers\HistoryController::class, 'printReceipt'])->name('kasir.history.print');
 
     // Laporan routes
     Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');

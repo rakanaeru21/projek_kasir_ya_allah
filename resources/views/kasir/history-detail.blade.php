@@ -244,6 +244,29 @@ body {
     box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
 }
 
+.btn-print {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-print:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.6);
+}
+
 /* ========================================
    Container - Main Content Area
    ======================================== */
@@ -542,6 +565,9 @@ body {
                     <h2>Detail Transaksi #{{ $transaksi->id }}</h2>
                 </div>
                 <div class="navbar-right">
+                    <a href="{{ route('kasir.history.print', $transaksi->id) }}" class="btn-print" target="_blank" style="margin-right: 10px;">
+                        <i class="fas fa-print"></i> Cetak Struk
+                    </a>
                     <a href="{{ route('kasir.history') }}" class="btn-back">
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
