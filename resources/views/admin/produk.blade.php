@@ -843,6 +843,7 @@ body {
                             <th>Kategori</th>
                             <th style="text-align: right;">Harga Normal</th>
                             <th style="text-align: right;">Harga Jual</th>
+                            <th style="text-align: right;">Harga Diskon</th>
                             <th style="text-align: center;">Stok</th>
                             <th style="text-align: center;">Status</th>
                             <th style="text-align: center;">Aksi</th>
@@ -871,6 +872,14 @@ body {
                             </td>
                             <td style="text-align: right; font-weight: 600; color: #81C784;">
                                 Rp {{ number_format((float)$produk->harga_untung, 0, ',', '.') }}
+                            </td>
+                            <td style="text-align: right; font-weight: 600; color: #FFB74D;">
+                                @if($produk->harga_diskon)
+                                    <span style="color: #FF5722;">Rp {{ number_format((float)$produk->harga_diskon, 0, ',', '.') }}</span>
+                                    <br><small style="color: #4CAF50; font-weight: 500;">🎯 Promo Aktif</small>
+                                @else
+                                    <span style="color: #9E9E9E; font-style: italic;">-</span>
+                                @endif
                             </td>
                             <td style="text-align: center;">
                                 <strong>{{ $produk->stok }}</strong> {{ $produk->satuan }}
@@ -1061,10 +1070,21 @@ body {
 
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="harga_diskon">Harga Diskon</label>
+                            <input type="number" id="harga_diskon" name="harga_diskon" min="0" step="0.01" placeholder="0" readonly>
+                            <span class="error-message" id="error_harga_diskon"></span>
+                            <small style="color: #FFB74D; font-size: 12px; margin-top: 4px; display: block;">
+                                ℹ️ Harga diskon akan otomatis terisi jika produk memiliki promo aktif
+                            </small>
+                        </div>
+                        <div class="form-group">
                             <label for="stok">Stok *</label>
                             <input type="number" id="stok" name="stok" required min="0" placeholder="0">
                             <span class="error-message" id="error_stok"></span>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="status">Status *</label>
                             <select id="status" name="status" required>
@@ -1186,6 +1206,7 @@ body {
                     document.getElementById('kategori').value = produk.kategori;
                     document.getElementById('harga_normal').value = produk.harga_normal;
                     document.getElementById('harga_untung').value = produk.harga_untung;
+                    document.getElementById('harga_diskon').value = produk.harga_diskon || '';
                     document.getElementById('stok').value = produk.stok;
                     document.getElementById('satuan').value = produk.satuan;
                     document.getElementById('status').value = produk.status;
@@ -1386,6 +1407,12 @@ body {
                         </td>
                         <td style="text-align: right; font-weight: 600; color: #81C784;">
                             Rp ${formatNumber(produk.harga_untung)}
+                        </td>
+                        <td style="text-align: right; font-weight: 600; color: #FFB74D;">
+                            ${produk.harga_diskon ?
+                                `<span style="color: #FF5722;">Rp ${formatNumber(produk.harga_diskon)}</span><br><small style="color: #4CAF50; font-weight: 500;">🎯 Promo Aktif</small>` :
+                                `<span style="color: #9E9E9E; font-style: italic;">-</span>`
+                            }
                         </td>
                         <td style="text-align: center;">
                             <strong>${produk.stok}</strong> ${produk.satuan}

@@ -768,7 +768,7 @@
                         <div class="product-grid" id="productGrid">
                             @forelse($produks as $produk)
                                 <div class="product-card"
-                                     onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->harga_untung }}, {{ $produk->stok }})"
+                                     onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->getFinalPrice() }}, {{ $produk->stok }}, {{ json_encode($produk->getActivePromoInfo()) }})"
                                      data-product-id="{{ $produk->id }}"
                                      data-product-name="{{ $produk->nama_produk }}"
                                      data-product-price="{{ $produk->harga_untung }}"
@@ -811,12 +811,41 @@
 
                                     <!-- Price Information -->
                                     <div class="price-info" style="margin-bottom: 8px;">
-                                        @if($produk->harga_normal != $produk->harga_untung)
-                                            <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
-                                                Rp {{ number_format($produk->harga_normal, 0, ',', '.') }}
+                                        @php
+                                            $produk->updateDiscountPrice();
+                                            $promoInfo = $produk->getActivePromoInfo();
+                                        @endphp
+
+                                        @if($promoInfo['has_promo'])
+                                            <!-- Promo Badge -->
+                                            <div style="background: linear-gradient(135deg, #FF5722 0%, #FF8A65 100%); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; margin-bottom: 4px; display: inline-block;">
+                                                🎯 {{ number_format($promoInfo['discount_percent'], 0) }}% OFF
                                             </div>
+
+                                            <!-- Original Price (crossed out) -->
+                                            <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
+                                                Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}
+                                            </div>
+
+                                            <!-- Discounted Price -->
+                                            <div class="product-price" style="color: #FF5722; font-weight: 700;">
+                                                Rp {{ number_format($promoInfo['discounted_price'], 0, ',', '.') }}
+                                            </div>
+
+                                            <!-- Savings -->
+                                            <div style="font-size: 10px; color: #4CAF50; font-weight: 600;">
+                                                Hemat Rp {{ number_format($promoInfo['savings'], 0, ',', '.') }}
+                                            </div>
+                                        @else
+                                            <!-- Normal pricing when no promo -->
+                                            @if($produk->harga_normal != $produk->harga_untung)
+                                                <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
+                                                    Rp {{ number_format($produk->harga_normal, 0, ',', '.') }}
+                                                </div>
+                                            @endif
+                                            <div class="product-price">Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}</div>
                                         @endif
-                                        <div class="product-price">Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}</div>
+
                                         <div class="product-unit" style="font-size: 11px; color: var(--color-text-muted);">
                                             per {{ $produk->satuan }}
                                         </div>
@@ -987,8 +1016,8 @@
         });
 
         // Add to cart function
-        function addToCart(id, name, price, stock) {
-            console.log('Adding to cart:', { id, name, price, stock });
+        function addToCart(id, name, price, stock, promoInfo = null) {
+            console.log('Adding to cart:', { id, name, price, stock, promoInfo });
 
             // Check if item already exists in cart
             const existingItem = cart.find(item => item.id === id);
@@ -998,8 +1027,9 @@
                     existingItem.quantity += 1;
                     console.log('Item quantity updated:', existingItem);
 
-                    // Show confirmation feedback
-                    showToast(`${name} ditambahkan ke keranjang (${existingItem.quantity})`, 'success');
+                    // Show confirmation feedback with promo info
+                    const promoText = promoInfo && promoInfo.has_promo ? ` (🎯 ${promoInfo.discount_percent}% OFF)` : '';
+                    showToast(`${name}${promoText} ditambahkan ke keranjang (${existingItem.quantity})`, 'success');
                 } else {
                     alert(`Stok tidak mencukupi! Stok tersedia: ${stock}`);
                     return;
@@ -1011,14 +1041,16 @@
                         name: name,
                         price: price,
                         quantity: 1,
-                        stock: stock
+                        stock: stock,
+                        promo_info: promoInfo
                     };
                     cart.push(newItem);
                     console.log('New item added to cart:', newItem);
                     console.log('Cart now contains:', cart);
 
-                    // Show confirmation feedback
-                    showToast(`${name} ditambahkan ke keranjang`, 'success');
+                    // Show confirmation feedback with promo info
+                    const promoText = promoInfo && promoInfo.has_promo ? ` (🎯 ${promoInfo.discount_percent}% OFF)` : '';
+                    showToast(`${name}${promoText} ditambahkan ke keranjang`, 'success');
                 } else {
                     alert('Produk habis!');
                     return;
@@ -1105,18 +1137,33 @@
                     const itemTotal = item.price * item.quantity;
                     subtotal += itemTotal;
 
+                    // Check if item has promo
+                    const hasPromo = item.promo_info && item.promo_info.has_promo;
+                    const promoText = hasPromo ? ` 🎯 ${item.promo_info.discount_percent}% OFF` : '';
+                    const originalPrice = hasPromo ? item.promo_info.original_price : item.price;
+
                     cartHTML += `
                         <div class="cart-item">
                             <div class="item-info">
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-price">Rp ${number_format(item.price)}</div>
+                                <div class="item-name">${item.name}${promoText}</div>
+                                ${hasPromo ?
+                                    `<div style="font-size: 10px; color: var(--color-text-muted); text-decoration: line-through;">
+                                        Rp ${number_format(originalPrice)}
+                                    </div>` :
+                                    ''
+                                }
+                                <div class="item-price" style="color: ${hasPromo ? '#FF5722' : 'var(--color-text-muted)'};">
+                                    Rp ${number_format(item.price)}
+                                </div>
                                 <div class="quantity-controls">
                                     <button type="button" class="qty-btn" onclick="updateQuantity(${index}, -1)">-</button>
                                     <input type="number" class="qty-input" value="${item.quantity}" onchange="setQuantity(${index}, this.value)" min="1" max="${item.stock}">
                                     <button type="button" class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
                                 </div>
                             </div>
-                            <div class="item-total">Rp ${number_format(itemTotal)}</div>
+                            <div class="item-total" style="color: ${hasPromo ? '#FF5722' : 'var(--color-primary-light)'};">
+                                Rp ${number_format(itemTotal)}
+                            </div>
                             <button type="button" class="remove-btn" onclick="removeFromCart(${index})">
                                 <i class="fas fa-times"></i>
                             </button>

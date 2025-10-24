@@ -18,8 +18,6 @@ class Promo extends Model
     ];
 
     protected $casts = [
-        'mulai' => 'date',
-        'berakhir' => 'date',
         'diskon' => 'decimal:2'
     ];
 
@@ -45,8 +43,8 @@ class Promo extends Model
      */
     public function scopeActive($query)
     {
-        $today = now()->toDateString();
-        return $query->where('mulai', '<=', $today)
-                    ->where('berakhir', '>=', $today);
+        $today = now()->format('Y-m-d');
+        return $query->whereDate('mulai', '<=', $today)
+                    ->whereDate('berakhir', '>=', $today);
     }
 }

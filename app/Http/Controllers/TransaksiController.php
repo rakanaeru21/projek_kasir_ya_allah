@@ -17,8 +17,13 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        // Ambil semua produk yang tersedia (stok > 0)
-        $produks = Produk::where('stok', '>', 0)->orderBy('nama_produk', 'asc')->get();
+        // Ambil semua produk yang tersedia (stok > 0) dengan promo info
+        $produks = Produk::with('promos')->where('stok', '>', 0)->orderBy('nama_produk', 'asc')->get();
+
+        // Update harga diskon untuk setiap produk berdasarkan promo aktif
+        foreach ($produks as $produk) {
+            $produk->updateDiscountPrice();
+        }
 
         return view('kasir.transaksi', compact('produks'));
     }
@@ -121,13 +126,18 @@ class TransaksiController extends Controller
     {
         $search = $request->get('search');
 
-        $produks = Produk::where('stok', '>', 0)
+        $produks = Produk::with('promos')->where('stok', '>', 0)
             ->where(function($query) use ($search) {
                 $query->where('nama_produk', 'like', "%{$search}%")
                       ->orWhere('kode_produk', 'like', "%{$search}%");
             })
             ->orderBy('nama_produk', 'asc')
             ->get();
+
+        // Update harga diskon untuk setiap produk
+        foreach ($produks as $produk) {
+            $produk->updateDiscountPrice();
+        }
 
         return response()->json($produks);
     }
@@ -137,14 +147,23 @@ class TransaksiController extends Controller
      */
     public function getProduct($id)
     {
-        $produk = Produk::findOrFail($id);
+        $produk = Produk::with('promos')->findOrFail($id);
+
+        // Update harga diskon berdasarkan promo aktif
+        $produk->updateDiscountPrice();
+
+        // Get promo info
+        $promoInfo = $produk->getActivePromoInfo();
 
         return response()->json([
             'id' => $produk->id,
             'nama' => $produk->nama_produk,
-            'harga' => $produk->harga_untung,
+            'harga' => $produk->getFinalPrice(), // Gunakan harga final (diskon atau normal)
+            'harga_normal' => $produk->harga_untung,
+            'harga_diskon' => $produk->harga_diskon,
             'stok' => $produk->stok,
-            'deskripsi' => $produk->deskripsi
+            'deskripsi' => $produk->deskripsi,
+            'promo_info' => $promoInfo
         ]);
     }
 
