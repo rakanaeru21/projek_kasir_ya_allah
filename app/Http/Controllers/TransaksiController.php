@@ -208,8 +208,10 @@ class TransaksiController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Ambil detail transaksi
-        $transaksi = Transaksi::with(['details.produk', 'user'])->findOrFail($id);
+        // Ambil detail transaksi hanya jika milik kasir yang sedang login
+        $transaksi = Transaksi::with(['details.produk', 'user'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
 
         // Return view khusus untuk print
         return view('kasir.print-receipt', compact('transaksi'));

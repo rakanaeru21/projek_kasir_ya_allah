@@ -547,15 +547,15 @@ body {
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Transaksi Hari Ini</h3>
-                        <div class="stat-number">0</div>
+                        <div class="stat-number">{{ $totalTransaksiHariIni ?? 0 }}</div>
                     </div>
                     <div class="stat-card">
                         <h3>Penjualan Hari Ini</h3>
-                        <div class="stat-number">Rp 0</div>
+                        <div class="stat-number">Rp {{ number_format($totalPenjualanHariIni ?? 0, 0, ',', '.') }}</div>
                     </div>
                     <div class="stat-card">
                         <h3>Item Terjual</h3>
-                        <div class="stat-number">0</div>
+                        <div class="stat-number">{{ $totalItemTerjualHariIni ?? 0 }}</div>
                     </div>
                 </div>
 

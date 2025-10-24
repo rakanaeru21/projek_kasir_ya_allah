@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KasirDashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,9 +40,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Kasir routes
-    Route::get('/kasir/dashboard', function () {
-        return view('kasir.dashboard');
-    })->name('kasir.dashboard');
+    Route::get('/kasir/dashboard', [KasirDashboardController::class, 'index'])->name('kasir.dashboard');
 
     Route::get('/kasir/transaksi', [TransaksiController::class, 'index'])->name('kasir.transaksi');
     Route::post('/kasir/transaksi', [TransaksiController::class, 'store'])->name('kasir.transaksi.store');

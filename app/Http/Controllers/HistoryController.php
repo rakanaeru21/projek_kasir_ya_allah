@@ -16,8 +16,9 @@ class HistoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Ambil semua transaksi dengan relasi detail dan produk, urutkan dari yang terbaru
+        // Ambil transaksi hanya dari kasir yang sedang login
         $transaksis = Transaksi::with(['details.produk'])
+            ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -31,8 +32,10 @@ class HistoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Ambil detail transaksi
-        $transaksi = Transaksi::with(['details.produk'])->findOrFail($id);
+        // Ambil detail transaksi hanya jika milik kasir yang sedang login
+        $transaksi = Transaksi::with(['details.produk'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
 
         return view('kasir.history-detail', compact('transaksi'));
     }
@@ -47,8 +50,10 @@ class HistoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Ambil detail transaksi
-        $transaksi = Transaksi::with(['details.produk', 'user'])->findOrFail($id);
+        // Ambil detail transaksi hanya jika milik kasir yang sedang login
+        $transaksi = Transaksi::with(['details.produk', 'user'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
 
         // Return view khusus untuk print
         return view('kasir.print-receipt', compact('transaksi'));
