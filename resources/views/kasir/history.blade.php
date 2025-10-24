@@ -1,10 +1,9 @@
-{{-- filepath: c:\xampp\htdocs\(yaallah_projek_kasir)\resources\views\kasir\dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kasir - Kasir Yaallah</title>
+    <title>History Transaksi - Kasir Yaallah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
@@ -255,141 +254,170 @@ body {
 }
 
 /* ========================================
-   Welcome Card - Hero Section
+   History Table Styles
    ======================================== */
-.welcome-card {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    margin-bottom: 30px;
-    border-left: 6px solid var(--color-primary);
-    border: 1px solid rgba(205, 79, 184, 0.2);
-}
-
-.welcome-card h1 {
-    color: var(--color-text);
-    margin-bottom: 16px;
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-}
-
-.welcome-card p {
-    color: var(--color-text-muted);
-    margin-bottom: 12px;
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.welcome-card p strong {
-    color: var(--color-primary-light);
-    font-weight: 600;
-}
-
-.info-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 12px;
-    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
-}
-
-/* ========================================
-   Stats Grid - Dashboard Statistics
-   ======================================== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-}
-
-.stat-card {
+.history-card {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    border-bottom: 4px solid var(--color-primary);
     border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.3);
-    background: var(--card-hover-bg);
+.history-card h2 {
+    color: var(--color-text);
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 600;
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.stat-card h3 {
-    color: var(--color-text-muted);
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.history-table th {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
     font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.stat-number {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--color-primary-light);
-    line-height: 1;
+.history-table th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.history-table th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.history-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(205, 79, 184, 0.1);
+    color: var(--color-text-muted);
+    background: rgba(35, 74, 101, 0.3);
+}
+
+.history-table tr:hover td {
+    background: rgba(205, 79, 184, 0.1);
+    color: var(--color-text);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-selesai {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #ffc107, #ffeb3b);
+    color: #333;
+}
+
+.status-batal {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    color: white;
+}
+
+.btn-detail {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-detail:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
 }
 
 /* ========================================
-   Quick Actions - Action Buttons
+   Pagination Styles
    ======================================== */
-.quick-actions {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 30px;
+    gap: 8px;
+}
+
+.pagination .page-link {
+    padding: 10px 15px;
+    background: var(--card-bg);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
     border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
-.quick-actions h2 {
-    color: var(--color-text);
-    margin-bottom: 24px;
-    font-size: 22px;
-    font-weight: 600;
-    border-bottom: 3px solid var(--color-primary);
-    padding-bottom: 12px;
-}
-
-.action-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-.action-btn {
+.pagination .page-link:hover {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
-    padding: 16px 24px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
+}
+
+.pagination .page-link.active {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+.empty-state {
     text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-muted);
 }
 
-.action-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.6);
-    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
 }
 
-.action-btn:active {
-    transform: translateY(0);
+.empty-state h3 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: var(--color-text);
+}
+
+.empty-state p {
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 /* ========================================
@@ -443,21 +471,21 @@ body {
         margin: 24px auto;
     }
 
-    .welcome-card {
-        padding: 24px;
+    .history-card {
+        padding: 20px;
     }
 
-    .welcome-card h1 {
-        font-size: 24px;
+    .history-card h2 {
+        font-size: 20px;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+    .history-table {
+        font-size: 14px;
     }
 
-    .action-buttons {
-        grid-template-columns: 1fr;
+    .history-table th,
+    .history-table td {
+        padding: 12px 8px;
     }
 }
     </style>
@@ -471,8 +499,8 @@ body {
                 <p>Kasir Panel</p>
             </div>
 
-             <div class="sidebar-menu">
-                <a href="{{ route('kasir.dashboard') }}" class="menu-item active">
+            <div class="sidebar-menu">
+                <a href="{{ route('kasir.dashboard') }}" class="menu-item">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
@@ -484,7 +512,7 @@ body {
                     <i class="fas fa-boxes"></i>
                     <span>Produk</span>
                 </a>
-                <a href="{{ route('kasir.history') }}" class="menu-item">
+                <a href="{{ route('kasir.history') }}" class="menu-item active">
                     <i class="fas fa-history"></i>
                     <span>History Transaksi</span>
                 </a>
@@ -525,7 +553,7 @@ body {
             <nav class="navbar">
                 <div class="navbar-left">
                     <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-                    <h2>Dashboard Kasir</h2>
+                    <h2>History Transaksi</h2>
                 </div>
                 <div class="navbar-right">
                     <span style="margin-right: 20px; color: var(--color-text-muted);">
@@ -535,47 +563,63 @@ body {
             </nav>
 
             <div class="container">
-                <!-- Welcome Card -->
-                <div class="welcome-card">
-                    <h1><i class="fas fa-hand-wave"></i> Selamat Datang, {{ auth()->user()->nama }}!</h1>
-                    <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
-                    <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
-                    <span class="info-badge"><i class="fas fa-check-circle"></i> Kasir Active</span>
-                </div>
+                <div class="history-card">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        Riwayat Transaksi
+                    </h2>
 
-                <!-- Statistics Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Transaksi Hari Ini</h3>
-                        <div class="stat-number">0</div>
+                    @if($transaksis->count() > 0)
+                    <div class="table-container">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>No. Transaksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Total Item</th>
+                                    <th>Total Harga</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($transaksis as $transaksi)
+                                <tr>
+                                    <td><strong>#{{ $transaksi->id }}</strong></td>
+                                    <td>{{ $transaksi->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $transaksi->details->sum('quantity') }} item</td>
+                                    <td><strong>Rp {{ number_format($transaksi->total_amount, 0, ',', '.') }}</strong></td>
+                                    <td>
+                                        @if($transaksi->status == 'completed')
+                                        <span class="status-badge status-selesai">Selesai</span>
+                                        @elseif($transaksi->status == 'cancelled')
+                                        <span class="status-badge status-batal">Batal</span>
+                                        @else
+                                        <span class="status-badge status-pending">Pending</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('kasir.history.show', $transaksi->id) }}" class="btn-detail">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="stat-card">
-                        <h3>Penjualan Hari Ini</h3>
-                        <div class="stat-number">Rp 0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Item Terjual</h3>
-                        <div class="stat-number">0</div>
-                    </div>
-                </div>
 
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
-                    <div class="action-buttons">
-                        <a href="{{ route('kasir.transaksi') }}" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-shopping-cart"></i> Transaksi Baru
-                        </a>
-                        <button class="action-btn">
-                            <i class="fas fa-eye"></i> Lihat Produk
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-chart-bar"></i> Laporan Hari Ini
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-user-friends"></i> Kelola Pelanggan
-                        </button>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        {{ $transaksis->links('pagination::simple-bootstrap-4') }}
                     </div>
+                    @else
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <h3>Belum Ada Transaksi</h3>
+                        <p>Riwayat transaksi akan muncul di sini setelah ada transaksi yang dilakukan.</p>
+                    </div>
+                    @endif
                 </div>
             </div>
         </main>

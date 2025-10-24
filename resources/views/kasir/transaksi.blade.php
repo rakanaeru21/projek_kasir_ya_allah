@@ -819,31 +819,31 @@
                                         @if($promoInfo['has_promo'])
                                             <!-- Promo Badge -->
                                             <div style="background: linear-gradient(135deg, #FF5722 0%, #FF8A65 100%); color: white; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; margin-bottom: 4px; display: inline-block;">
-                                                🎯 {{ number_format($promoInfo['discount_percent'], 0) }}% OFF
+                                                🎯 {{ number_format((float)$promoInfo['discount_percent'], 0) }}% OFF
                                             </div>
 
                                             <!-- Original Price (crossed out) -->
                                             <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
-                                                Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}
+                                                Rp {{ number_format((float)$produk->harga_untung, 0, ',', '.') }}
                                             </div>
 
                                             <!-- Discounted Price -->
                                             <div class="product-price" style="color: #FF5722; font-weight: 700;">
-                                                Rp {{ number_format($promoInfo['discounted_price'], 0, ',', '.') }}
+                                                Rp {{ number_format((float)$promoInfo['discounted_price'], 0, ',', '.') }}
                                             </div>
 
                                             <!-- Savings -->
                                             <div style="font-size: 10px; color: #4CAF50; font-weight: 600;">
-                                                Hemat Rp {{ number_format($promoInfo['savings'], 0, ',', '.') }}
+                                                Hemat Rp {{ number_format((float)$promoInfo['savings'], 0, ',', '.') }}
                                             </div>
                                         @else
                                             <!-- Normal pricing when no promo -->
                                             @if($produk->harga_normal != $produk->harga_untung)
                                                 <div class="product-price-normal" style="font-size: 11px; color: var(--color-text-muted); text-decoration: line-through;">
-                                                    Rp {{ number_format($produk->harga_normal, 0, ',', '.') }}
+                                                    Rp {{ number_format((float)$produk->harga_normal, 0, ',', '.') }}
                                                 </div>
                                             @endif
-                                            <div class="product-price">Rp {{ number_format($produk->harga_untung, 0, ',', '.') }}</div>
+                                            <div class="product-price">Rp {{ number_format((float)$produk->harga_untung, 0, ',', '.') }}</div>
                                         @endif
 
                                         <div class="product-unit" style="font-size: 11px; color: var(--color-text-muted);">

@@ -48,6 +48,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir/transaksi/product/{id}', [TransaksiController::class, 'getProduct'])->name('kasir.transaksi.product');
     Route::post('/kasir/transaksi/check-stock', [TransaksiController::class, 'checkStock'])->name('kasir.transaksi.check-stock');
 
+    // History routes
+    Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
+    Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
+
     Route::get('/pengguna/dashboard', function () {
         return view('pengguna.dashboard');
     })->name('pengguna.dashboard');

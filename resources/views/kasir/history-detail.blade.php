@@ -1,10 +1,9 @@
-{{-- filepath: c:\xampp\htdocs\(yaallah_projek_kasir)\resources\views\kasir\dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kasir - Kasir Yaallah</title>
+    <title>Detail Transaksi #{{ $transaksi->id }} - Kasir Yaallah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
@@ -222,10 +221,10 @@ body {
     color: var(--color-text);
 }
 
-.btn-logout {
+.btn-back {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
-    padding: 10px 24px;
+    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -233,16 +232,16 @@ body {
     font-size: 14px;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.btn-logout:hover {
+.btn-back:hover {
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
-}
-
-.btn-logout:active {
-    transform: translateY(0);
 }
 
 /* ========================================
@@ -255,141 +254,151 @@ body {
 }
 
 /* ========================================
-   Welcome Card - Hero Section
+   Detail Card Styles
    ======================================== */
-.welcome-card {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    margin-bottom: 30px;
-    border-left: 6px solid var(--color-primary);
-    border: 1px solid rgba(205, 79, 184, 0.2);
-}
-
-.welcome-card h1 {
-    color: var(--color-text);
-    margin-bottom: 16px;
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-}
-
-.welcome-card p {
-    color: var(--color-text-muted);
-    margin-bottom: 12px;
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.welcome-card p strong {
-    color: var(--color-primary-light);
-    font-weight: 600;
-}
-
-.info-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 12px;
-    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
-}
-
-/* ========================================
-   Stats Grid - Dashboard Statistics
-   ======================================== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-}
-
-.stat-card {
+.detail-card {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    border-bottom: 4px solid var(--color-primary);
     border: 1px solid rgba(205, 79, 184, 0.2);
+    margin-bottom: 20px;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.3);
-    background: var(--card-hover-bg);
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.stat-card h3 {
-    color: var(--color-text-muted);
+.detail-header h2 {
+    color: var(--color-text);
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
     font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.stat-number {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--color-primary-light);
-    line-height: 1;
+.status-selesai {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
 }
 
-/* ========================================
-   Quick Actions - Action Buttons
-   ======================================== */
-.quick-actions {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    margin-top: 30px;
-    border: 1px solid rgba(205, 79, 184, 0.2);
+.status-pending {
+    background: linear-gradient(135deg, #ffc107, #ffeb3b);
+    color: #333;
 }
 
-.quick-actions h2 {
-    color: var(--color-text);
-    margin-bottom: 24px;
-    font-size: 22px;
-    font-weight: 600;
-    border-bottom: 3px solid var(--color-primary);
-    padding-bottom: 12px;
+.status-batal {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    color: white;
 }
 
-.action-buttons {
+.transaction-info {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.action-btn {
+.info-item {
+    background: rgba(205, 79, 184, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.info-item label {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-item span {
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.items-section h3 {
+    color: var(--color-text);
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.items-table th {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
-    padding: 16px 24px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
+    padding: 16px;
+    text-align: left;
     font-weight: 600;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
-    text-align: center;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.action-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.6);
-    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+.items-table th:first-child {
+    border-top-left-radius: 8px;
 }
 
-.action-btn:active {
-    transform: translateY(0);
+.items-table th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.items-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(205, 79, 184, 0.1);
+    color: var(--color-text-muted);
+    background: rgba(35, 74, 101, 0.3);
+}
+
+.items-table tr:hover td {
+    background: rgba(205, 79, 184, 0.1);
+    color: var(--color-text);
+}
+
+.total-section {
+    background: rgba(205, 79, 184, 0.15);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: right;
+    margin-top: 20px;
+}
+
+.total-section h4 {
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 700;
 }
 
 /* ========================================
@@ -435,7 +444,7 @@ body {
     }
 
     .navbar h2 {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .container {
@@ -443,21 +452,26 @@ body {
         margin: 24px auto;
     }
 
-    .welcome-card {
-        padding: 24px;
+    .detail-card {
+        padding: 20px;
     }
 
-    .welcome-card h1 {
-        font-size: 24px;
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .stats-grid {
+    .transaction-info {
         grid-template-columns: 1fr;
-        gap: 16px;
     }
 
-    .action-buttons {
-        grid-template-columns: 1fr;
+    .items-table {
+        font-size: 14px;
+    }
+
+    .items-table th,
+    .items-table td {
+        padding: 12px 8px;
     }
 }
     </style>
@@ -471,8 +485,8 @@ body {
                 <p>Kasir Panel</p>
             </div>
 
-             <div class="sidebar-menu">
-                <a href="{{ route('kasir.dashboard') }}" class="menu-item active">
+            <div class="sidebar-menu">
+                <a href="{{ route('kasir.dashboard') }}" class="menu-item">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
@@ -484,7 +498,7 @@ body {
                     <i class="fas fa-boxes"></i>
                     <span>Produk</span>
                 </a>
-                <a href="{{ route('kasir.history') }}" class="menu-item">
+                <a href="{{ route('kasir.history') }}" class="menu-item active">
                     <i class="fas fa-history"></i>
                     <span>History Transaksi</span>
                 </a>
@@ -525,56 +539,82 @@ body {
             <nav class="navbar">
                 <div class="navbar-left">
                     <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-                    <h2>Dashboard Kasir</h2>
+                    <h2>Detail Transaksi #{{ $transaksi->id }}</h2>
                 </div>
                 <div class="navbar-right">
-                    <span style="margin-right: 20px; color: var(--color-text-muted);">
-                        {{ date('l, d F Y') }}
-                    </span>
+                    <a href="{{ route('kasir.history') }}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
                 </div>
             </nav>
 
             <div class="container">
-                <!-- Welcome Card -->
-                <div class="welcome-card">
-                    <h1><i class="fas fa-hand-wave"></i> Selamat Datang, {{ auth()->user()->nama }}!</h1>
-                    <p>Role: <strong>{{ ucfirst(auth()->user()->role) }}</strong></p>
-                    <p>Email: <strong>{{ auth()->user()->email }}</strong></p>
-                    <span class="info-badge"><i class="fas fa-check-circle"></i> Kasir Active</span>
-                </div>
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <h2>
+                            <i class="fas fa-receipt"></i>
+                            Detail Transaksi #{{ $transaksi->id }}
+                        </h2>
+                        @if($transaksi->status == 'completed')
+                        <span class="status-badge status-selesai">Selesai</span>
+                        @elseif($transaksi->status == 'cancelled')
+                        <span class="status-badge status-batal">Batal</span>
+                        @else
+                        <span class="status-badge status-pending">Pending</span>
+                        @endif
+                    </div>
 
-                <!-- Statistics Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Transaksi Hari Ini</h3>
-                        <div class="stat-number">0</div>
+                    <div class="transaction-info">
+                        <div class="info-item">
+                            <label>Tanggal Transaksi</label>
+                            <span>{{ $transaksi->created_at->format('d F Y') }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Waktu</label>
+                            <span>{{ $transaksi->created_at->format('H:i:s') }} WIB</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Total Item</label>
+                            <span>{{ $transaksi->details->sum('quantity') }} item</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Total Harga</label>
+                            <span>Rp {{ number_format($transaksi->total_amount, 0, ',', '.') }}</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3>Penjualan Hari Ini</h3>
-                        <div class="stat-number">Rp 0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Item Terjual</h3>
-                        <div class="stat-number">0</div>
-                    </div>
-                </div>
 
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
-                    <div class="action-buttons">
-                        <a href="{{ route('kasir.transaksi') }}" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-shopping-cart"></i> Transaksi Baru
-                        </a>
-                        <button class="action-btn">
-                            <i class="fas fa-eye"></i> Lihat Produk
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-chart-bar"></i> Laporan Hari Ini
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-user-friends"></i> Kelola Pelanggan
-                        </button>
+                    <div class="items-section">
+                        <h3>
+                            <i class="fas fa-list"></i>
+                            Item Transaksi
+                        </h3>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Produk</th>
+                                    <th>Harga Satuan</th>
+                                    <th>Jumlah</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($transaksi->details as $index => $detail)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td><strong>{{ $detail->produk->nama_produk }}</strong></td>
+                                    <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                                    <td>{{ $detail->quantity }}</td>
+                                    <td><strong>Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</strong></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <div class="total-section">
+                            <h4>Total: Rp {{ number_format($transaksi->total_amount, 0, ',', '.') }}</h4>
+                        </div>
                     </div>
                 </div>
             </div>
