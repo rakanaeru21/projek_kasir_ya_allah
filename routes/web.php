@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,6 +52,11 @@ Route::middleware('auth')->group(function () {
     // History routes
     Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
     Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
+
+    // Laporan routes
+    Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');
+    Route::get('/kasir/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('kasir.laporan.export-pdf');
+    Route::get('/kasir/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('kasir.laporan.export-excel');
 
     Route::get('/pengguna/dashboard', function () {
         return view('pengguna.dashboard');

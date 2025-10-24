@@ -699,13 +699,13 @@
                     <i class="fas fa-boxes"></i>
                     <span>Produk</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="{{ route('kasir.history') }}" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    <span>History Transaksi</span>
+                </a>
+                <a href="{{ route('kasir.laporan') }}" class="menu-item">
                     <i class="fas fa-chart-line"></i>
                     <span>Laporan</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span>Pelanggan</span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="fas fa-cog"></i>
@@ -768,15 +768,15 @@
                         <div class="product-grid" id="productGrid">
                             @forelse($produks as $produk)
                                 <div class="product-card"
-                                     onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->getFinalPrice() }}, {{ $produk->stok }}, {{ json_encode($produk->getActivePromoInfo()) }})"
-                                     data-product-id="{{ $produk->id }}"
-                                     data-product-name="{{ $produk->nama_produk }}"
-                                     data-product-price="{{ $produk->harga_untung }}"
-                                     data-product-stock="{{ $produk->stok }}"
-                                     data-name="{{ strtolower($produk->nama_produk) }}"
-                                     data-code="{{ strtolower($produk->kode_produk) }}"
-                                     data-category="{{ strtolower($produk->kategori) }}"
-                                     title="Klik untuk menambahkan ke keranjang">
+                                    onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->getFinalPrice() }}, {{ $produk->stok }}, {{ json_encode($produk->getActivePromoInfo()) }})"
+                                    data-product-id="{{ $produk->id }}"
+                                    data-product-name="{{ $produk->nama_produk }}"
+                                    data-product-price="{{ $produk->harga_untung }}"
+                                    data-product-stock="{{ $produk->stok }}"
+                                    data-name="{{ strtolower($produk->nama_produk) }}"
+                                    data-code="{{ strtolower($produk->kode_produk) }}"
+                                    data-category="{{ strtolower($produk->kategori) }}"
+                                    title="Klik untuk menambahkan ke keranjang">
 
                                     <!-- Product Image -->
                                     <div class="product-image">

@@ -488,9 +488,9 @@ body {
                     <i class="fas fa-history"></i>
                     <span>History Transaksi</span>
                 </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span>Pelanggan</span>
+                <a href="{{ route('kasir.laporan') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan</span>
                 </a>
                 <a href="#" class="menu-item">
                     <i class="fas fa-cog"></i>
@@ -573,7 +573,7 @@ body {
                             <i class="fas fa-chart-bar"></i> Laporan Hari Ini
                         </button>
                         <button class="action-btn">
-                            <i class="fas fa-user-friends"></i> Kelola Pelanggan
+                            <i class="fas fa-chart-line"></i> Laporan Penjualan
                         </button>
                     </div>
                 </div>
