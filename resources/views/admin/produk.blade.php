@@ -8,21 +8,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Data Produk - AeruStore</title>
+    <title>Data Produk - Kasir Yaallah</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
    CSS Variables - Custom Properties
    ======================================== */
 :root {
     --color-primary: #cd4fb8;
-    --color-primary-light: #cd4fb8;
-    --color-primary-dark: #cd4fb8;
+    --color-primary-light: #e06dd0;
+    --color-primary-dark: #b3329d;
     --color-secondary: #FFE900;
     --color-secondary-light: #FFF654;
     --color-bg: #1B3C53;
-    --color-bg-alt: #1B3C53;
+    --color-bg-alt: #152e42;
     --color-text: #F5F5F5;
-    --color-text-muted: #f5f5f5;
+    --color-text-muted: #b8c5d0;
+    --sidebar-width: 280px;
+    --card-bg: #234a65;
+    --card-hover-bg: #2a5672;
 }
 
 /* ========================================
@@ -41,51 +45,196 @@ body {
 }
 
 /* ========================================
+   Layout Structure
+   ======================================== */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========================================
+   Sidebar Navigation
+   ======================================== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #0f2332 0%, #1B3C53 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid rgba(205, 79, 184, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+    text-align: center;
+    background: rgba(205, 79, 184, 0.1);
+}
+
+.sidebar-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text);
+}
+
+.sidebar-header h2 i {
+    color: var(--color-primary-light);
+    margin-right: 8px;
+}
+
+.sidebar-header p {
+    font-size: 14px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+.sidebar-menu {
+    padding: 20px 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(205, 79, 184, 0.15);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item.active {
+    background: rgba(205, 79, 184, 0.2);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item:hover i {
+    color: var(--color-primary-light);
+}
+
+.menu-item.active i {
+    color: var(--color-primary);
+}
+
+.menu-item i {
+    font-size: 18px;
+    margin-right: 16px;
+    width: 24px;
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+}
+
+.menu-item span {
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(205, 79, 184, 0.2);
+    background: rgba(15, 35, 50, 0.5);
+    margin-top: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+}
+
+.user-details h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-text);
+}
+
+.user-details p {
+    font-size: 12px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--color-bg-alt);
+}
+
+/* ========================================
    Navbar - Top Navigation
    ======================================== */
 .navbar {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
+    background: var(--card-bg);
+    color: var(--color-text);
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text);
+    cursor: pointer;
+    margin-right: 16px;
 }
 
 .navbar h2 {
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.5px;
+    color: var(--color-text);
 }
 
-.nav-left { display: flex; align-items: center; gap: 12px; }
-        .nav-center { display: flex; gap: 16px; align-items: center; }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-
-        .nav-link {
-            color: #fff;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background .25s, color .25s, transform .25s, opacity .25s;
-            opacity: .9;
-        }
-        .nav-link:hover {
-            background: rgba(255,255,255,.15);
-            opacity: 1;
-            transform: translateY(-1px);
-        }
-        .nav-link.active {
-            background: #ffffff;
-            color: var(--color-primary);
-            box-shadow: 0 2px 8px rgba(7,203,115,.25);
-        }
-
 .btn-logout {
-    background: white;
-    color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
     padding: 10px 24px;
     border: none;
     border-radius: 8px;
@@ -93,13 +242,13 @@ body {
     font-weight: 600;
     font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
 }
 
 .btn-logout:hover {
-    background: var(--color-bg-alt);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
 }
 
 .btn-logout:active {
@@ -110,104 +259,21 @@ body {
    Container - Main Content Area
    ======================================== */
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 40px auto;
     padding: 0 40px;
-}
-
-/* ========================================
-   Welcome Card - Hero Section
-   ======================================== */
-.welcome-card {
-    background: #234C6A;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
-    border-left: 6px solid var(--color-primary);
-}
-
-.welcome-card h1 {
-    color: var(--color-text);
-    margin-bottom: 16px;
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-}
-
-.welcome-card p {
-    color: var(--color-text-muted);
-    margin-bottom: 12px;
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.welcome-card p strong {
-    color: var(--color-primary);
-    font-weight: 600;
-}
-
-.info-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 12px;
-    box-shadow: 0 2px 8px rgba(255, 0, 123, 0.3);
-}
-
-/* ========================================
-   Stats Grid - Dashboard Statistics
-   ======================================== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-}
-
-.stat-card {
-    background: #234C6A;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s ease;
-    border-bottom: 4px solid var(--color-primary);
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-}
-
-.stat-card h3 {
-    color: var(--color-text-muted);
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.stat-number {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--color-primary);
-    line-height: 1;
 }
 
 /* ========================================
    Quick Actions - Action Buttons
    ======================================== */
 .quick-actions {
-    background: #234C6A;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     margin-top: 30px;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .quick-actions h2 {
@@ -219,29 +285,32 @@ body {
     padding-bottom: 12px;
 }
 
-.action-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+.quick-actions h2 i {
+    color: var(--color-primary-light);
+    margin-right: 8px;
 }
 
 .action-btn {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     color: white;
-    padding: 16px 24px;
+    padding: 12px 24px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
     font-size: 15px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px #dc72cb;
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
     text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .action-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px #dc72cb;
+    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.6);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
 }
 
 .action-btn:active {
@@ -259,13 +328,14 @@ body {
 .product-table {
     width: 100%;
     border-collapse: collapse;
-    background: #2d5f7f;
+    background: var(--card-bg);
     border-radius: 8px;
     overflow: hidden;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .product-table thead {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .product-table thead th {
@@ -277,12 +347,12 @@ body {
 }
 
 .product-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(205, 79, 184, 0.1);
     transition: all 0.3s ease;
 }
 
 .product-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-hover-bg);
 }
 
 .product-table tbody tr:last-child {
@@ -291,19 +361,19 @@ body {
 
 .product-table tbody td {
     padding: 16px;
-    color: #F5F5F5;
+    color: var(--color-text);
     font-size: 14px;
 }
 
 .product-table tbody td:first-child {
     font-weight: 600;
-    color: #F5F5F5;
+    color: var(--color-primary-light);
 }
 
 .product-code {
     font-family: 'Courier New', monospace;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-light);
     background: rgba(205, 79, 184, 0.2);
     padding: 4px 8px;
     border-radius: 6px;
@@ -371,48 +441,12 @@ body {
     font-size: 64px;
     margin-bottom: 16px;
     opacity: 0.5;
+    color: var(--color-primary);
 }
 
 .empty-state-text {
     font-size: 16px;
     color: var(--color-text-muted);
-}
-
-/* ========================================
-   Responsive Design - Mobile Optimization
-   ======================================== */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 16px 20px;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .navbar h2 {
-        font-size: 20px;
-    }
-
-    .container {
-        padding: 0 20px;
-        margin: 24px auto;
-    }
-
-    .welcome-card {
-        padding: 24px;
-    }
-
-    .welcome-card h1 {
-        font-size: 24px;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .action-buttons {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ========================================
@@ -437,14 +471,15 @@ body {
 }
 
 .modal-content {
-    background-color: #234C6A;
+    background-color: var(--card-bg);
     margin: 5% auto;
     padding: 0;
     border-radius: 12px;
     width: 90%;
-    max-width: 600px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 700px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     animation: slideDown 0.3s ease;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 @keyframes slideDown {
@@ -474,6 +509,10 @@ body {
     font-weight: 600;
 }
 
+.modal-header h2 i {
+    margin-right: 8px;
+}
+
 .close {
     color: white;
     font-size: 32px;
@@ -490,6 +529,8 @@ body {
 
 .modal-body {
     padding: 30px;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 .form-group {
@@ -504,14 +545,19 @@ body {
     font-size: 14px;
 }
 
+.form-group label i {
+    color: var(--color-primary-light);
+    margin-right: 6px;
+}
+
 .form-group input,
 .form-group textarea,
 .form-group select {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid rgba(205, 79, 184, 0.3);
+    border: 2px solid rgba(205, 79, 184, 0.2);
     border-radius: 8px;
-    background: #1B3C53;
+    background: var(--color-bg);
     color: var(--color-text);
     font-size: 14px;
     transition: all 0.3s ease;
@@ -571,12 +617,12 @@ body {
     font-weight: 600;
     font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.3);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
 }
 
 .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.4);
+    box-shadow: 0 6px 20px rgba(205, 79, 184, 0.6);
 }
 
 .btn-submit:disabled {
@@ -615,7 +661,7 @@ body {
     border-radius: 8px;
     border: 2px solid rgba(205, 79, 184, 0.3);
     padding: 4px;
-    background: #1B3C53;
+    background: var(--color-bg);
 }
 
 .product-image {
@@ -653,7 +699,7 @@ body {
 .file-input-label {
     display: block;
     padding: 12px 16px;
-    background: #1B3C53;
+    background: var(--color-bg);
     border: 2px dashed rgba(205, 79, 184, 0.5);
     border-radius: 8px;
     cursor: pointer;
@@ -670,7 +716,7 @@ body {
 .file-name {
     margin-top: 8px;
     font-size: 12px;
-    color: var(--color-primary);
+    color: var(--color-primary-light);
     font-weight: 600;
 }
 
@@ -687,6 +733,7 @@ body {
     border-radius: 8px;
     flex-wrap: wrap;
     gap: 16px;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .pagination-info {
@@ -695,7 +742,7 @@ body {
 }
 
 .pagination-info strong {
-    color: var(--color-primary);
+    color: var(--color-primary-light);
     font-weight: 600;
 }
 
@@ -721,7 +768,7 @@ body {
     padding: 8px 12px;
     border: 2px solid rgba(205, 79, 184, 0.3);
     border-radius: 6px;
-    background: #1B3C53;
+    background: var(--color-bg);
     color: var(--color-text);
     font-size: 14px;
     cursor: pointer;
@@ -743,7 +790,7 @@ body {
     padding: 8px 16px;
     border: 2px solid rgba(205, 79, 184, 0.3);
     border-radius: 6px;
-    background: #1B3C53;
+    background: var(--color-bg);
     color: var(--color-text);
     cursor: pointer;
     font-weight: 600;
@@ -760,9 +807,9 @@ body {
 }
 
 .pagination-btn.active {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     border-color: var(--color-primary);
-    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.3);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.4);
 }
 
 .pagination-btn:disabled {
@@ -775,7 +822,60 @@ body {
     gap: 4px;
 }
 
+/* ========================================
+   Mobile Sidebar Overlay
+   ======================================== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+/* ========================================
+   Responsive Design - Mobile Optimization
+   ======================================== */
 @media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .navbar {
+        padding: 16px 20px;
+    }
+
+    .navbar h2 {
+        font-size: 20px;
+    }
+
+    .container {
+        padding: 0 20px;
+        margin: 24px auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
     .pagination-container {
         flex-direction: column;
         align-items: stretch;
@@ -794,39 +894,90 @@ body {
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <h2>🛒 AeruStore</h2>
-        </div>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-cash-register"></i> Kasir Yaallah</h2>
+                <p>Admin Panel</p>
+            </div>
 
-        <div class="nav-center">
-            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? 'active' : '' }}">Produk</a>
-            <a href="{{ route('admin.promo') }}" class="nav-link {{ request()->routeIs('admin.promo') ? 'active' : '' }}">Promo</a>
-            <a href="#" class="nav-link">Profil</a>
-        </div>
+             <div class="sidebar-menu">
+                <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('admin.produk') }}" class="menu-item {{ request()->routeIs('admin.produk*') ? 'active' : '' }}">
+                    <i class="fas fa-box"></i>
+                    <span>Produk</span>
+                </a>
+                <a href="{{ route('admin.promo') }}" class="menu-item {{ request()->routeIs('admin.promo*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Laporan</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
 
-        <div class="nav-right">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
-        </div>
-    </nav>
-
-    <div class="container">
-
-        <!-- Product Management Section -->
-        <div class="quick-actions">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <div>
-                    <h2 style="margin: 0; border: none; padding: 0;">📦 Data Produk</h2>
-                    <p style="color: var(--color-text-light); font-size: 14px; margin-top: 4px;">Kelola semua produk Anda di sini</p>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ substr(auth()->user()->nama, 0, 1) }}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ auth()->user()->nama }}</h4>
+                        <p>{{ ucfirst(auth()->user()->role) }}</p>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 12px;">
-                    <button class="action-btn" onclick="openModal()">
-                        <span style="font-size: 18px;">+</span>
-                        Tambah Produk
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="width: 100%;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h2>Data Produk</h2>
+                </div>
+                <div class="navbar-right">
+                    <span style="margin-right: 20px; color: var(--color-text-muted);">
+                        {{ date('l, d F Y') }}
+                    </span>
+                </div>
+            </nav>
+
+            <div class="container">
+                <!-- Product Management Section -->
+                <div class="quick-actions">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <h2 style="margin: 0; border: none; padding: 0;">
+                                <i class="fas fa-box"></i> Data Produk
+                            </h2>
+                            <p style="color: var(--color-text-muted); font-size: 14px; margin-top: 4px;">Kelola semua produk Anda di sini</p>
+                        </div>
+                        <div>
+                            <button class="action-btn" onclick="openModal()">
+                                <i class="fas fa-plus"></i> Tambah Produk
                     </button>
                 </div>
             </div>
@@ -857,13 +1008,13 @@ body {
                                 @if($produk->gambar && file_exists(public_path($produk->gambar)))
                                     <img src="{{ asset($produk->gambar) }}" alt="{{ $produk->nama_produk }}" class="product-image">
                                 @else
-                                    <div class="no-image">📦</div>
+                                    <div class="no-image"><i class="fas fa-box"></i></div>
                                 @endif
                             </td>
                             <td><span class="product-code">{{ $produk->kode_produk }}</span></td>
                             <td style="font-weight: 600;">{{ $produk->nama_produk }}</td>
                             <td>
-                                <span style="background: rgba(205, 79, 184, 0.3); color: #F5F5F5; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                                <span style="background: rgba(205, 79, 184, 0.3); color: var(--color-text); padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500;">
                                     {{ $produk->kategori }}
                                 </span>
                             </td>
@@ -876,7 +1027,7 @@ body {
                             <td style="text-align: right; font-weight: 600; color: #FFB74D;">
                                 @if($produk->harga_diskon)
                                     <span style="color: #FF5722;">Rp {{ number_format((float)$produk->harga_diskon, 0, ',', '.') }}</span>
-                                    <br><small style="color: #4CAF50; font-weight: 500;">🎯 Promo Aktif</small>
+                                    <br><small style="color: #4CAF50; font-weight: 500;"><i class="fas fa-tag"></i> Promo Aktif</small>
                                 @else
                                     <span style="color: #9E9E9E; font-style: italic;">-</span>
                                 @endif
@@ -891,17 +1042,17 @@ body {
                             </td>
                             <td style="text-align: center; white-space: nowrap;">
                                 <button onclick="editProduk({{ $produk->id }})" class="btn-action btn-edit">
-                                    ✏️ Edit
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
                                 <button onclick="hapusProduk({{ $produk->id }})" class="btn-action btn-delete">
-                                    🗑️ Hapus
+                                    <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="empty-state">
-                                <div class="empty-state-icon">📦</div>
+                            <td colspan="11" class="empty-state">
+                                <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
                                 <div class="empty-state-text">Belum ada data produk</div>
                                 <p style="margin-top: 8px; font-size: 14px;">Klik tombol "Tambah Produk" untuk menambahkan produk baru</p>
                             </td>
@@ -933,10 +1084,10 @@ body {
 
                     <div class="pagination-buttons">
                         <button class="pagination-btn" onclick="goToPage(1)" {{ $produks->currentPage() == 1 ? 'disabled' : '' }}>
-                            ⏮️ First
+                            <i class="fas fa-angle-double-left"></i> First
                         </button>
                         <button class="pagination-btn" onclick="goToPage({{ $produks->currentPage() - 1 }})" {{ !$produks->previousPageUrl() ? 'disabled' : '' }}>
-                            ◀️ Prev
+                            <i class="fas fa-angle-left"></i> Prev
                         </button>
 
                         <div class="page-numbers" id="pageNumbers">
@@ -969,22 +1120,24 @@ body {
                         </div>
 
                         <button class="pagination-btn" onclick="goToPage({{ $produks->currentPage() + 1 }})" {{ !$produks->nextPageUrl() ? 'disabled' : '' }}>
-                            Next ▶️
+                            Next <i class="fas fa-angle-right"></i>
                         </button>
                         <button class="pagination-btn" onclick="goToPage({{ $produks->lastPage() }})" {{ $produks->currentPage() == $produks->lastPage() ? 'disabled' : '' }}>
-                            Last ⏭️
+                            Last <i class="fas fa-angle-double-right"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modal Tambah/Edit Produk -->
     <div id="produkModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Tambah Produk</h2>
+                <h2 id="modalTitle"><i class="fas fa-box"></i> Tambah Produk</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <form id="produkForm">
@@ -995,35 +1148,33 @@ body {
                 <div class="modal-body">
                     <!-- Info Kode Produk (hanya tampil saat edit) -->
                     <div class="form-group" id="kodeProdukInfo" style="display: none;">
-                        <label>Kode Produk</label>
+                        <label><i class="fas fa-barcode"></i> Kode Produk</label>
                         <div style="background: rgba(205, 79, 184, 0.2); padding: 12px 16px; border-radius: 8px; border: 2px solid rgba(205, 79, 184, 0.3);">
                             <span class="product-code" id="displayKodeProduk" style="background: transparent; padding: 0;"></span>
                         </div>
                         <small style="color: var(--color-text-muted); font-size: 12px; margin-top: 4px; display: block;">
-                            ℹ️ Kode produk dibuat otomatis dan tidak dapat diubah
+                            <i class="fas fa-info-circle"></i> Kode produk dibuat otomatis dan tidak dapat diubah
                         </small>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nama_produk">Nama Produk *</label>
-                            <input type="text" id="nama_produk" name="nama_produk" required placeholder="Contoh: Indomie Goreng">
-                            <span class="error-message" id="error_nama_produk"></span>
-                        </div>
+                    <div class="form-group">
+                        <label for="nama_produk"><i class="fas fa-tag"></i> Nama Produk *</label>
+                        <input type="text" id="nama_produk" name="nama_produk" required placeholder="Contoh: Indomie Goreng">
+                        <span class="error-message" id="error_nama_produk"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="deskripsi">Deskripsi</label>
+                        <label for="deskripsi"><i class="fas fa-align-left"></i> Deskripsi</label>
                         <textarea id="deskripsi" name="deskripsi" placeholder="Deskripsi produk (opsional)"></textarea>
                         <span class="error-message" id="error_deskripsi"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="gambar">Gambar Produk</label>
+                        <label for="gambar"><i class="fas fa-image"></i> Gambar Produk</label>
                         <div class="file-input-wrapper">
                             <input type="file" id="gambar" name="gambar" accept="image/*" onchange="previewImage(event)">
                             <label for="gambar" class="file-input-label">
-                                📷 Pilih Gambar
+                                <i class="fas fa-camera"></i> Pilih Gambar
                                 <div class="file-name" id="fileName"></div>
                             </label>
                         </div>
@@ -1035,12 +1186,12 @@ body {
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="kategori">Kategori *</label>
+                            <label for="kategori"><i class="fas fa-list"></i> Kategori *</label>
                             <input type="text" id="kategori" name="kategori" required placeholder="Contoh: Makanan">
                             <span class="error-message" id="error_kategori"></span>
                         </div>
                         <div class="form-group">
-                            <label for="satuan">Satuan *</label>
+                            <label for="satuan"><i class="fas fa-balance-scale"></i> Satuan *</label>
                             <select id="satuan" name="satuan" required>
                                 <option value="">Pilih Satuan</option>
                                 <option value="pcs">Pcs (Pieces)</option>
@@ -1057,12 +1208,12 @@ body {
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="harga_normal">Harga Normal (Modal) *</label>
+                            <label for="harga_normal"><i class="fas fa-dollar-sign"></i> Harga Normal (Modal) *</label>
                             <input type="number" id="harga_normal" name="harga_normal" required min="0" step="0.01" placeholder="0">
                             <span class="error-message" id="error_harga_normal"></span>
                         </div>
                         <div class="form-group">
-                            <label for="harga_untung">Harga Jual (Untung) *</label>
+                            <label for="harga_untung"><i class="fas fa-money-bill-wave"></i> Harga Jual (Untung) *</label>
                             <input type="number" id="harga_untung" name="harga_untung" required min="0" step="0.01" placeholder="0">
                             <span class="error-message" id="error_harga_untung"></span>
                         </div>
@@ -1070,35 +1221,37 @@ body {
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="harga_diskon">Harga Diskon</label>
+                            <label for="harga_diskon"><i class="fas fa-percent"></i> Harga Diskon</label>
                             <input type="number" id="harga_diskon" name="harga_diskon" min="0" step="0.01" placeholder="0" readonly>
                             <span class="error-message" id="error_harga_diskon"></span>
-                            <small style="color: #FFB74D; font-size: 12px; margin-top: 4px; display: block;">
-                                ℹ️ Harga diskon akan otomatis terisi jika produk memiliki promo aktif
+                            <small style="color: var(--color-text-muted); font-size: 12px; margin-top: 4px; display: block;">
+                                <i class="fas fa-info-circle"></i> Harga diskon akan otomatis terisi jika produk memiliki promo aktif
                             </small>
                         </div>
                         <div class="form-group">
-                            <label for="stok">Stok *</label>
+                            <label for="stok"><i class="fas fa-cubes"></i> Stok *</label>
                             <input type="number" id="stok" name="stok" required min="0" placeholder="0">
                             <span class="error-message" id="error_stok"></span>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="status">Status *</label>
-                            <select id="status" name="status" required>
-                                <option value="aktif">Aktif</option>
-                                <option value="nonaktif">Nonaktif</option>
-                            </select>
-                            <span class="error-message" id="error_status"></span>
-                        </div>
+                    <div class="form-group">
+                        <label for="status"><i class="fas fa-toggle-on"></i> Status *</label>
+                        <select id="status" name="status" required>
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Nonaktif</option>
+                        </select>
+                        <span class="error-message" id="error_status"></span>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
-                    <button type="submit" class="btn-submit" id="submitBtn">Simpan</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
                 </div>
             </form>
         </div>
@@ -1117,13 +1270,13 @@ body {
 
         function openModal() {
             document.getElementById('produkModal').style.display = 'block';
-            document.getElementById('modalTitle').textContent = 'Tambah Produk';
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Produk';
             document.getElementById('produkForm').reset();
             document.getElementById('produkId').value = '';
             document.getElementById('formMethod').value = 'POST';
             document.getElementById('fileName').textContent = '';
             document.getElementById('imagePreviewContainer').style.display = 'none';
-            document.getElementById('kodeProdukInfo').style.display = 'none'; // Sembunyikan info kode produk
+            document.getElementById('kodeProdukInfo').style.display = 'none';
             clearErrors();
         }
 
@@ -1193,11 +1346,10 @@ body {
                 if (result.success) {
                     const produk = result.data;
 
-                    document.getElementById('modalTitle').textContent = 'Edit Produk';
+                    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Produk';
                     document.getElementById('produkId').value = produk.id;
                     document.getElementById('formMethod').value = 'PUT';
 
-                    // Tampilkan info kode produk (read-only)
                     document.getElementById('kodeProdukInfo').style.display = 'block';
                     document.getElementById('displayKodeProduk').textContent = produk.kode_produk;
 
@@ -1211,7 +1363,6 @@ body {
                     document.getElementById('satuan').value = produk.satuan;
                     document.getElementById('status').value = produk.status;
 
-                    // Show existing image if available
                     const previewContainer = document.getElementById('imagePreviewContainer');
                     const preview = document.getElementById('imagePreview');
                     const fileName = document.getElementById('fileName');
@@ -1268,14 +1419,13 @@ body {
 
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Menyimpan...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
             const formElement = e.target;
             const formData = new FormData(formElement);
             const produkId = document.getElementById('produkId').value;
             const method = document.getElementById('formMethod').value;
 
-            // Tambahkan _method untuk PUT request
             if (method === 'PUT') {
                 formData.append('_method', 'PUT');
             }
@@ -1283,7 +1433,7 @@ body {
             try {
                 const url = produkId ? `/admin/produk/${produkId}` : '/admin/produk';
                 const response = await fetch(url, {
-                    method: 'POST', // Selalu gunakan POST, Laravel akan handle _method
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
                         'Accept': 'application/json',
@@ -1309,11 +1459,10 @@ body {
                 alert('Terjadi kesalahan saat menyimpan data');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Simpan';
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
             }
         });
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('produkModal');
             if (event.target == modal) {
@@ -1321,9 +1470,6 @@ body {
             }
         }
 
-        // ========================================
-        // Pagination Functions
-        // ========================================
         let currentPage = {{ $produks->currentPage() }};
         let perPage = {{ $produks->perPage() }};
         let lastPage = {{ $produks->lastPage() }};
@@ -1332,14 +1478,13 @@ body {
             if (page < 1 || page > lastPage || page === currentPage) {
                 return;
             }
-
             currentPage = page;
             loadProducts();
         }
 
         function changePerPage(newPerPage) {
             perPage = newPerPage;
-            currentPage = 1; // Reset to first page
+            currentPage = 1;
             loadProducts();
         }
 
@@ -1371,8 +1516,8 @@ body {
             if (products.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" class="empty-state">
-                            <div class="empty-state-icon">📦</div>
+                        <td colspan="11" class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
                             <div class="empty-state-text">Belum ada data produk</div>
                             <p style="margin-top: 8px; font-size: 14px;">Klik tombol "Tambah Produk" untuk menambahkan produk baru</p>
                         </td>
@@ -1386,7 +1531,7 @@ body {
                 const no = (currentPage - 1) * perPage + index + 1;
                 const gambar = produk.gambar
                     ? `<img src="/${produk.gambar}" alt="${produk.nama_produk}" class="product-image">`
-                    : `<div class="no-image">📦</div>`;
+                    : `<div class="no-image"><i class="fas fa-box"></i></div>`;
 
                 const statusClass = produk.status === 'aktif' ? 'aktif' : 'nonaktif';
                 const statusText = produk.status === 'aktif' ? '✓ Aktif' : '✕ Nonaktif';
@@ -1398,7 +1543,7 @@ body {
                         <td><span class="product-code">${produk.kode_produk}</span></td>
                         <td style="font-weight: 600;">${produk.nama_produk}</td>
                         <td>
-                            <span style="background: rgba(205, 79, 184, 0.3); color: #F5F5F5; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                            <span style="background: rgba(205, 79, 184, 0.3); color: var(--color-text); padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500;">
                                 ${produk.kategori}
                             </span>
                         </td>
@@ -1410,7 +1555,7 @@ body {
                         </td>
                         <td style="text-align: right; font-weight: 600; color: #FFB74D;">
                             ${produk.harga_diskon ?
-                                `<span style="color: #FF5722;">Rp ${formatNumber(produk.harga_diskon)}</span><br><small style="color: #4CAF50; font-weight: 500;">🎯 Promo Aktif</small>` :
+                                `<span style="color: #FF5722;">Rp ${formatNumber(produk.harga_diskon)}</span><br><small style="color: #4CAF50; font-weight: 500;"><i class="fas fa-tag"></i> Promo Aktif</small>` :
                                 `<span style="color: #9E9E9E; font-style: italic;">-</span>`
                             }
                         </td>
@@ -1424,10 +1569,10 @@ body {
                         </td>
                         <td style="text-align: center; white-space: nowrap;">
                             <button onclick="editProduk(${produk.id})" class="btn-action btn-edit">
-                                ✏️ Edit
+                                <i class="fas fa-edit"></i> Edit
                             </button>
                             <button onclick="hapusProduk(${produk.id})" class="btn-action btn-delete">
-                                🗑️ Hapus
+                                <i class="fas fa-trash"></i> Hapus
                             </button>
                         </td>
                     </tr>
@@ -1441,12 +1586,10 @@ body {
             currentPage = data.current_page;
             lastPage = data.last_page;
 
-            // Update info text
             document.getElementById('showingFrom').textContent = data.from || 0;
             document.getElementById('showingTo').textContent = data.to || 0;
             document.getElementById('totalItems').textContent = data.total;
 
-            // Update page numbers
             const pageNumbersContainer = document.getElementById('pageNumbers');
             let html = '';
 
@@ -1473,27 +1616,17 @@ body {
             }
 
             pageNumbersContainer.innerHTML = html;
-
-            // Update navigation buttons
             updateNavigationButtons();
         }
 
         function updateNavigationButtons() {
             const buttons = document.querySelectorAll('.pagination-buttons > .pagination-btn');
-
-            // First button
             buttons[0].disabled = currentPage === 1;
             buttons[0].onclick = () => goToPage(1);
-
-            // Prev button
             buttons[1].disabled = currentPage === 1;
             buttons[1].onclick = () => goToPage(currentPage - 1);
-
-            // Next button
             buttons[buttons.length - 2].disabled = currentPage === lastPage;
             buttons[buttons.length - 2].onclick = () => goToPage(currentPage + 1);
-
-            // Last button
             buttons[buttons.length - 1].disabled = currentPage === lastPage;
             buttons[buttons.length - 1].onclick = () => goToPage(lastPage);
         }
@@ -1504,6 +1637,33 @@ body {
                 maximumFractionDigits: 0
             });
         }
+
+        // Sidebar Toggle for Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (sidebarToggle && sidebar && sidebarOverlay) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+
+                // Close sidebar on window resize if desktop
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768) {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

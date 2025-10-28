@@ -9,21 +9,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Data Promo - AeruStore</title>
+    <title>Data Promo - Kasir Yaallah</title>
     <style>
         /* ========================================
    CSS Variables - Custom Properties
    ======================================== */
 :root {
     --color-primary: #cd4fb8;
-    --color-primary-light: #cd4fb8;
-    --color-primary-dark: #cd4fb8;
+    --color-primary-light: #e06dd0;
+    --color-primary-dark: #b3329d;
     --color-secondary: #FFE900;
     --color-secondary-light: #FFF654;
     --color-bg: #1B3C53;
-    --color-bg-alt: #1B3C53;
+    --color-bg-alt: #152e42;
     --color-text: #F5F5F5;
-    --color-text-muted: #f5f5f5;
+    --color-text-muted: #b8c5d0;
+    --sidebar-width: 280px;
+    --card-bg: #234a65;
+    --card-hover-bg: #2a5672;
 }
 
 /* ========================================
@@ -42,51 +45,196 @@ body {
 }
 
 /* ========================================
+   Layout Structure
+   ======================================== */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ========================================
+   Sidebar Navigation
+   ======================================== */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #0f2332 0%, #1B3C53 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid rgba(205, 79, 184, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+    text-align: center;
+    background: rgba(205, 79, 184, 0.1);
+}
+
+.sidebar-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text);
+}
+
+.sidebar-header h2 i {
+    color: var(--color-primary-light);
+    margin-right: 8px;
+}
+
+.sidebar-header p {
+    font-size: 14px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+.sidebar-menu {
+    padding: 20px 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(205, 79, 184, 0.15);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item.active {
+    background: rgba(205, 79, 184, 0.2);
+    color: var(--color-text);
+    border-left-color: var(--color-primary);
+}
+
+.menu-item:hover i {
+    color: var(--color-primary-light);
+}
+
+.menu-item.active i {
+    color: var(--color-primary);
+}
+
+.menu-item i {
+    font-size: 18px;
+    margin-right: 16px;
+    width: 24px;
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+}
+
+.menu-item span {
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(205, 79, 184, 0.2);
+    background: rgba(15, 35, 50, 0.5);
+    margin-top: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+}
+
+.user-details h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--color-text);
+}
+
+.user-details p {
+    font-size: 12px;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--color-bg-alt);
+}
+
+/* ========================================
    Navbar - Top Navigation
    ======================================== */
 .navbar {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
+    background: var(--card-bg);
+    color: var(--color-text);
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-text);
+    cursor: pointer;
+    margin-right: 16px;
 }
 
 .navbar h2 {
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.5px;
-}
-
-.nav-left { display: flex; align-items: center; gap: 12px; }
-.nav-center { display: flex; gap: 16px; align-items: center; }
-.nav-right { display: flex; align-items: center; gap: 12px; }
-
-.nav-link {
-    color: #fff;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background .25s, color .25s, transform .25s, opacity .25s;
-    opacity: .9;
-}
-.nav-link:hover {
-    background: rgba(255,255,255,.15);
-    opacity: 1;
-    transform: translateY(-1px);
-}
-.nav-link.active {
-    background: #ffffff;
-    color: var(--color-primary);
-    box-shadow: 0 2px 8px rgba(7,203,115,.25);
+    color: var(--color-text);
 }
 
 .btn-logout {
-    background: white;
-    color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
     padding: 10px 24px;
     border: none;
     border-radius: 8px;
@@ -94,13 +242,17 @@ body {
     font-weight: 600;
     font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
 }
 
 .btn-logout:hover {
-    background: var(--color-bg-alt);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
+}
+
+.btn-logout:active {
+    transform: translateY(0);
 }
 
 /* ========================================
@@ -116,15 +268,16 @@ body {
    Page Header
    ======================================== */
 .page-header {
-    background: #234C6A;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     margin-bottom: 30px;
     border-left: 6px solid var(--color-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .page-header h1 {
@@ -162,10 +315,11 @@ body {
    Table Styles
    ======================================== */
 .table-wrapper {
-    background: #234C6A;
+    background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 .table-header {
@@ -206,7 +360,7 @@ body {
 }
 
 .promo-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-hover-bg);
 }
 
 .promo-table tbody tr:last-child {
@@ -343,16 +497,17 @@ body {
 }
 
 .modal-content {
-    background-color: #234C6A;
+    background-color: var(--card-bg);
     margin: 2% auto;
     padding: 0;
     border-radius: 12px;
     width: 90%;
     max-width: 700px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     animation: slideDown 0.3s ease;
     max-height: 90vh;
     overflow-y: auto;
+    border: 1px solid rgba(205, 79, 184, 0.2);
 }
 
 @keyframes slideDown {
@@ -420,9 +575,9 @@ body {
 .form-group select {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid rgba(205, 79, 184, 0.3);
+    border: 2px solid rgba(205, 79, 184, 0.2);
     border-radius: 8px;
-    background: #1B3C53;
+    background: var(--color-bg);
     color: var(--color-text);
     font-size: 14px;
     transition: all 0.3s ease;
@@ -458,9 +613,9 @@ body {
     max-height: 300px;
     overflow-y: auto;
     padding: 16px;
-    background: #1B3C53;
+    background: var(--color-bg);
     border-radius: 8px;
-    border: 2px solid rgba(205, 79, 184, 0.3);
+    border: 2px solid rgba(205, 79, 184, 0.2);
 }
 
 .product-item {
@@ -514,7 +669,7 @@ body {
     gap: 12px;
     position: sticky;
     bottom: 0;
-    background: #234C6A;
+    background: var(--card-bg);
     border-radius: 0 0 12px 12px;
 }
 
@@ -599,13 +754,49 @@ body {
 }
 
 /* ========================================
+   Mobile Sidebar Overlay
+   ======================================== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+/* ========================================
    Responsive Design
    ======================================== */
 @media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
     .navbar {
         padding: 16px 20px;
-        flex-direction: column;
-        gap: 16px;
+    }
+
+    .navbar h2 {
+        font-size: 20px;
     }
 
     .container {
@@ -642,124 +833,178 @@ body {
     }
 }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <h2>🛒 AeruStore</h2>
-        </div>
-
-        <div class="nav-center">
-            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('admin.produk') }}" class="nav-link {{ request()->routeIs('admin.produk') ? 'active' : '' }}">Produk</a>
-            <a href="{{ route('admin.promo') }}" class="nav-link {{ request()->routeIs('admin.promo') ? 'active' : '' }}">Promo</a>
-            <a href="#" class="nav-link">Profil</a>
-        </div>
-
-        <div class="nav-right">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div>
-                <h1>🎯 Kelola Promo</h1>
-                <p>Tambah, edit, dan kelola promo diskon untuk produk</p>
-            </div>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-add" onclick="openModal()">+ Tambah Promo</button>
-            </div>
-        </div>
-
-        <!-- Alert Messages -->
-        <div id="alertSuccess" class="alert alert-success"></div>
-        <div id="alertError" class="alert alert-error"></div>
-
-        <!-- Tabel Promo -->
-        <div class="table-wrapper">
-            <div class="table-header">
-                <h2>Daftar Promo</h2>
-                <span>Total: {{ count($promos) }} promo</span>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-cash-register"></i> Kasir Yaallah</h2>
+                <p>Admin Panel</p>
             </div>
 
-            @if(count($promos) > 0)
-                <table class="promo-table">
-                    <thead>
-                        <tr>
-                            <th>Nama Promo</th>
-                            <th>Diskon</th>
-                            <th>Periode</th>
-                            <th>Status</th>
-                            <th>Produk Terkait</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($promos as $promo)
-                            <tr>
-                                <td>
-                                    <div class="promo-name">{{ $promo->nama }}</div>
-                                    @if($promo->deskripsi)
-                                        <div style="font-size: 12px; color: #ccc; margin-top: 4px;">
-                                            {{ Str::limit($promo->deskripsi, 50) }}
-                                        </div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="promo-discount">{{ number_format((float)$promo->diskon, 0) }}%</span>
-                                </td>
-                                <td>
-                                    <div>{{ date('d/m/Y', strtotime($promo->mulai)) }}</div>
-                                    <div style="font-size: 12px; color: #ccc;">s/d {{ date('d/m/Y', strtotime($promo->berakhir)) }}</div>
-                                </td>
-                                <td>
-                                    @php
-                                        $today = now()->toDateString();
-                                        if ($promo->berakhir < $today) {
-                                            $status = 'berakhir';
-                                            $statusText = 'Berakhir';
-                                        } elseif ($promo->mulai > $today) {
-                                            $status = 'akan-datang';
-                                            $statusText = 'Akan Datang';
-                                        } else {
-                                            $status = 'aktif';
-                                            $statusText = 'Aktif';
-                                        }
-                                    @endphp
-                                    <span class="status-badge status-{{ $status }}">{{ $statusText }}</span>
-                                </td>
-                                <td>
-                                    <div class="product-tags">
-                                        @forelse($promo->produks->take(3) as $produk)
-                                            <span class="product-tag">{{ $produk->nama_produk }}</span>
-                                        @empty
-                                            <span style="color: #ccc; font-style: italic;">Tidak ada produk</span>
-                                        @endforelse
-                                        @if($promo->produks->count() > 3)
-                                            <span class="product-tag">+{{ $promo->produks->count() - 3 }} lainnya</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <button class="btn-action btn-edit" onclick="editPromo({{ $promo->id }})">Edit</button>
-                                    <button class="btn-action btn-delete" onclick="deletePromo({{ $promo->id }}, '{{ $promo->nama }}')">Hapus</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="empty-state">
-                    <div class="empty-state-icon">🎯</div>
-                    <div class="empty-state-text">Belum ada promo yang dibuat</div>
+             <div class="sidebar-menu">
+                <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('admin.produk') }}" class="menu-item {{ request()->routeIs('admin.produk*') ? 'active' : '' }}">
+                    <i class="fas fa-box"></i>
+                    <span>Produk</span>
+                </a>
+                <a href="{{ route('admin.promo') }}" class="menu-item {{ request()->routeIs('admin.promo*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Laporan</span>
+                </a>
+                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ substr(auth()->user()->nama, 0, 1) }}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ auth()->user()->nama }}</h4>
+                        <p>{{ ucfirst(auth()->user()->role) }}</p>
+                    </div>
                 </div>
-            @endif
-        </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="width: 100%;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h2>Data Promo</h2>
+                </div>
+                <div class="navbar-right">
+                    <span style="margin-right: 20px; color: var(--color-text-muted);">
+                        {{ date('l, d F Y') }}
+                    </span>
+                </div>
+            </nav>
+
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-tags"></i> Kelola Promo</h1>
+                        <p>Tambah, edit, dan kelola promo diskon untuk produk</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-add" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Promo</button>
+                    </div>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertSuccess" class="alert alert-success"></div>
+                <div id="alertError" class="alert alert-error"></div>
+
+                <!-- Tabel Promo -->
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <h2>Daftar Promo</h2>
+                        <span>Total: {{ count($promos) }} promo</span>
+                    </div>
+
+                @if(count($promos) > 0)
+                    <table class="promo-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Promo</th>
+                                <th>Diskon</th>
+                                <th>Periode</th>
+                                <th>Status</th>
+                                <th>Produk Terkait</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($promos as $promo)
+                                <tr>
+                                    <td>
+                                        <div class="promo-name">{{ $promo->nama }}</div>
+                                        @if($promo->deskripsi)
+                                            <div style="font-size: 12px; color: #ccc; margin-top: 4px;">
+                                                {{ Str::limit($promo->deskripsi, 50) }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="promo-discount">{{ number_format((float)$promo->diskon, 0) }}%</span>
+                                    </td>
+                                    <td>
+                                        <div>{{ date('d/m/Y', strtotime($promo->mulai)) }}</div>
+                                        <div style="font-size: 12px; color: #ccc;">s/d {{ date('d/m/Y', strtotime($promo->berakhir)) }}</div>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $today = now()->toDateString();
+                                            if ($promo->berakhir < $today) {
+                                                $status = 'berakhir';
+                                                $statusText = 'Berakhir';
+                                            } elseif ($promo->mulai > $today) {
+                                                $status = 'akan-datang';
+                                                $statusText = 'Akan Datang';
+                                            } else {
+                                                $status = 'aktif';
+                                                $statusText = 'Aktif';
+                                            }
+                                        @endphp
+                                        <span class="status-badge status-{{ $status }}">{{ $statusText }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="product-tags">
+                                            @forelse($promo->produks->take(3) as $produk)
+                                                <span class="product-tag">{{ $produk->nama_produk }}</span>
+                                            @empty
+                                                <span style="color: #ccc; font-style: italic;">Tidak ada produk</span>
+                                            @endforelse
+                                            @if($promo->produks->count() > 3)
+                                                <span class="product-tag">+{{ $promo->produks->count() - 3 }} lainnya</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn-action btn-edit" onclick="editPromo({{ $promo->id }})">Edit</button>
+                                        <button class="btn-action btn-delete" onclick="deletePromo({{ $promo->id }}, '{{ $promo->nama }}')">Hapus</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-tags"></i></div>
+                        <div class="empty-state-text">Belum ada promo yang dibuat</div>
+                    </div>
+                @endif
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modal Tambah/Edit Promo -->
@@ -1097,6 +1342,33 @@ body {
                 const nextWeek = new Date();
                 nextWeek.setDate(nextWeek.getDate() + 7);
                 document.getElementById('berakhir').value = nextWeek.toISOString().split('T')[0];
+            }
+        });
+
+        // Sidebar Toggle for Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (sidebarToggle && sidebar && sidebarOverlay) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+
+                // Close sidebar on window resize if desktop
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768) {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                    }
+                });
             }
         });
     </script>
