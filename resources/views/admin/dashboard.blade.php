@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Kasir Yaallah</title>
+    <title>Dashboard Admin - AeruStore</title>
     <style>
         /* ========================================
    CSS Variables - Custom Properties
@@ -285,10 +285,9 @@ body {
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <h2>🛒 Kasir Yaallah</h2>
-        </div>
+            <nav class="sidebar">
+            <h2>🛒 AeruStore</h2>
+            <p>Admin Panel</p>
 
         <div class="nav-center">
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Beranda</a>

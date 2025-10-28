@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produk - Kasir Yaallah</title>
+    <title>Produk - AeruStore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -717,7 +717,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2><i class="fas fa-store"></i> Kasir Yaallah</h2>
+            <h2><i class="fas fa-store"></i> AeruStore</h2>
         </div>
 
         <nav class="sidebar-nav">

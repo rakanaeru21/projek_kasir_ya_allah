@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pengguna - Kasir Yaallah</title>
+    <title>Dashboard Pengguna - AeruStore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
@@ -515,7 +515,7 @@ body {
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2><i class="fas fa-store"></i> Kasir Yaallah</h2>
+            <h2><i class="fas fa-store"></i> AeruStore</h2>
         </div>
 
         <nav class="sidebar-nav">
@@ -565,7 +565,7 @@ body {
         <!-- Welcome Card -->
         <div class="welcome-card">
             <h1><i class="fas fa-hand-wave"></i> Selamat Datang, {{ $user->nama }}!</h1>
-            <p>Selamat berbelanja di Kasir Yaallah. Nikmati pengalaman belanja yang mudah dan menyenangkan.</p>
+            <p>Selamat berbelanja di AeruStore. Nikmati pengalaman belanja yang mudah dan menyenangkan.</p>
             <span class="info-badge"><i class="fas fa-check-circle"></i> {{ ucfirst($user->role) }}</span>
         </div>
 

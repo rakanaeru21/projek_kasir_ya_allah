@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keranjang Belanja - Kasir Yaallah</title>
+    <title>Keranjang Belanja - AeruStore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -504,7 +504,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <h2><a href="{{ route('pengguna.dashboard') }}"><i class="fas fa-store"></i> Kasir Yaallah</a></h2>
+        <h2><a href="{{ route('pengguna.dashboard') }}"><i class="fas fa-store"></i> AeruStore</a></h2>
         <div class="navbar-right">
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                 @csrf

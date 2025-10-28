@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Penjualan - Kasir Yaallah</title>
+    <title>Laporan Penjualan - AeruStore</title>
     <style>
         * {
             margin: 0;
@@ -212,7 +212,7 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>KASIR YAALLAH</h1>
+        <h1>AERUSTORE</h1>
         <h2>Laporan Penjualan</h2>
     </div>
 
@@ -334,7 +334,7 @@
     <!-- Footer -->
     <div class="footer">
         <p>
-            <strong>Kasir Yaallah</strong> - Laporan Penjualan dicetak pada {{ date('d/m/Y H:i:s') }}
+            <strong>AeruStore</strong> - Laporan Penjualan dicetak pada {{ date('d/m/Y H:i:s') }}
             <br>
             Sistem Kasir Digital - Halaman <span class="pagenum"></span>
         </p>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kasir - Kasir Yaallah</title>
+    <title>Dashboard Kasir - AeruStore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
@@ -467,7 +467,7 @@ body {
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2><i class="fas fa-cash-register"></i> Kasir Yaallah</h2>
+                <h2><i class="fas fa-cash-register"></i> AeruStore</h2>
                 <p>Kasir Panel</p>
             </div>
 

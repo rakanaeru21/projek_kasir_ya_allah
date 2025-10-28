@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Kasir Yaallah</title>
+    <title>Login - AeruStore</title>
     <style>
         /* ========================================
    CSS Variables - Custom Properties
@@ -286,7 +286,7 @@ input[type="password"]::placeholder {
 </head>
 <body>
     <div class="login-container">
-        <h2>Login Kasir Yaallah</h2>
+        <h2>Login AeruStore</h2>
 
         @if($errors->any())
             <div class="alert alert-danger">

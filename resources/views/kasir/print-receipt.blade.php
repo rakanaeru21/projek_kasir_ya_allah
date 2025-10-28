@@ -222,11 +222,11 @@
     <div class="receipt">
         <!-- Header -->
         <div class="header">
-            <div class="store-name">KASIR YAALLAH</div>
+            <div class="store-name">AERUSTORE</div>
             <div class="store-info">
                 Jl. Contoh Alamat No. 123<br>
                 Telp: (021) 12345678<br>
-                Email: info@yaallah.com
+                Email: info@aerustore.com
             </div>
         </div>
 
