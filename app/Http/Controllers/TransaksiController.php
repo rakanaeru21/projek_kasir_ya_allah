@@ -35,6 +35,7 @@ class TransaksiController extends Controller
     {
         $request->validate([
             'customer_name' => 'required|string|max:255',
+            'member_phone' => 'nullable|string|max:15',
             'payment_method' => 'required|in:cash,card,transfer',
             'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:produks,id',
@@ -49,6 +50,14 @@ class TransaksiController extends Controller
         try {
             // Mulai database transaction
             DB::beginTransaction();
+
+            // Cek apakah ada member berdasarkan nomor telepon
+            $member = null;
+            if ($request->member_phone) {
+                $member = User::where('role', 'pengguna')
+                            ->where('nomor_telepon', $request->member_phone)
+                            ->first();
+            }
 
             // Validasi stok produk
             foreach ($request->items as $item) {
@@ -71,6 +80,7 @@ class TransaksiController extends Controller
             $transaksi = Transaksi::create([
                 'kode_transaksi' => $kodeTransaksi,
                 'user_id' => Auth::id(),
+                'member_id' => $member ? $member->id : null, // Simpan member_id jika ada
                 'customer_name' => $request->customer_name,
                 'payment_method' => $request->payment_method,
                 'subtotal' => $request->subtotal,
@@ -196,6 +206,47 @@ class TransaksiController extends Controller
             'valid' => empty($stockErrors),
             'errors' => $stockErrors
         ]);
+    }
+
+    /**
+     * Check member by phone number
+     */
+    public function checkMember(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string'
+        ]);
+
+        try {
+            // Cari user dengan role 'pengguna' berdasarkan nomor telepon
+            $member = User::where('role', 'pengguna')
+                          ->where('nomor_telepon', $request->phone)
+                          ->first();
+
+            if ($member) {
+                return response()->json([
+                    'success' => true,
+                    'member' => [
+                        'id' => $member->id,
+                        'nama' => $member->nama,
+                        'email' => $member->email,
+                        'telepon' => $member->nomor_telepon,
+                        'created_at' => $member->created_at->format('d/m/Y')
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member tidak ditemukan'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

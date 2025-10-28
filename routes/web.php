@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard routes berdasarkan role
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/produk', [ProdukController::class, 'index'])->name('admin.produk');
         Route::post('/admin/produk', [ProdukController::class, 'store'])->name('admin.produk.store');
@@ -40,28 +40,50 @@ Route::middleware('auth')->group(function () {
     });
 
     // Kasir routes
-    Route::get('/kasir/dashboard', [KasirDashboardController::class, 'index'])->name('kasir.dashboard');
+    Route::middleware(['auth', 'role:kasir,admin'])->group(function () {
+        Route::get('/kasir/dashboard', [KasirDashboardController::class, 'index'])->name('kasir.dashboard');
 
-    Route::get('/kasir/transaksi', [TransaksiController::class, 'index'])->name('kasir.transaksi');
-    Route::post('/kasir/transaksi', [TransaksiController::class, 'store'])->name('kasir.transaksi.store');
-    Route::get('/kasir/transaksi/search', [TransaksiController::class, 'searchProduct'])->name('kasir.transaksi.search');
-    Route::get('/kasir/transaksi/product/{id}', [TransaksiController::class, 'getProduct'])->name('kasir.transaksi.product');
-    Route::post('/kasir/transaksi/check-stock', [TransaksiController::class, 'checkStock'])->name('kasir.transaksi.check-stock');
-    Route::get('/kasir/transaksi/{id}/print', [TransaksiController::class, 'printReceipt'])->name('kasir.transaksi.print');
+        Route::get('/kasir/transaksi', [TransaksiController::class, 'index'])->name('kasir.transaksi');
+        Route::post('/kasir/transaksi', [TransaksiController::class, 'store'])->name('kasir.transaksi.store');
+        Route::get('/kasir/transaksi/search', [TransaksiController::class, 'searchProduct'])->name('kasir.transaksi.search');
+        Route::get('/kasir/transaksi/product/{id}', [TransaksiController::class, 'getProduct'])->name('kasir.transaksi.product');
+        Route::post('/kasir/transaksi/check-stock', [TransaksiController::class, 'checkStock'])->name('kasir.transaksi.check-stock');
+        Route::post('/kasir/check-member', [TransaksiController::class, 'checkMember'])->name('kasir.check-member');
+        Route::get('/kasir/transaksi/{id}/print', [TransaksiController::class, 'printReceipt'])->name('kasir.transaksi.print');
 
-    // History routes
-    Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
-    Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
-    Route::get('/kasir/history/{id}/print', [\App\Http\Controllers\HistoryController::class, 'printReceipt'])->name('kasir.history.print');
+        // History routes
+        Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
+        Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
+        Route::get('/kasir/history/{id}/print', [\App\Http\Controllers\HistoryController::class, 'printReceipt'])->name('kasir.history.print');
 
-    // Laporan routes
-    Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');
-    Route::get('/kasir/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('kasir.laporan.export-pdf');
-    Route::get('/kasir/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('kasir.laporan.export-excel');
+        // Laporan routes
+        Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');
+        Route::get('/kasir/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('kasir.laporan.export-pdf');
+        Route::get('/kasir/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('kasir.laporan.export-excel');
+    });
 
-    Route::get('/pengguna/dashboard', function () {
-        return view('pengguna.dashboard');
-    })->name('pengguna.dashboard');
+    // Pengguna routes
+    Route::middleware(['auth', 'role:pengguna,admin'])->group(function () {
+        Route::get('/pengguna/dashboard', [\App\Http\Controllers\PenggunaController::class, 'dashboard'])->name('pengguna.dashboard');
+        Route::get('/pengguna/produk', [\App\Http\Controllers\PenggunaController::class, 'produk'])->name('pengguna.produk');
+        Route::get('/pengguna/produk/{id}', [\App\Http\Controllers\PenggunaController::class, 'detailProduk'])->name('pengguna.produk.detail');
+
+        // Cart routes
+        Route::post('/pengguna/cart/add', [\App\Http\Controllers\PenggunaController::class, 'addToCart'])->name('pengguna.cart.add');
+        Route::get('/pengguna/keranjang', [\App\Http\Controllers\PenggunaController::class, 'keranjang'])->name('pengguna.keranjang');
+        Route::post('/pengguna/cart/update', [\App\Http\Controllers\PenggunaController::class, 'updateCart'])->name('pengguna.cart.update');
+        Route::delete('/pengguna/cart/remove/{produk_id}', [\App\Http\Controllers\PenggunaController::class, 'removeFromCart'])->name('pengguna.cart.remove');
+        Route::post('/pengguna/cart/clear', [\App\Http\Controllers\PenggunaController::class, 'clearCart'])->name('pengguna.cart.clear');
+        Route::get('/pengguna/cart/count', [\App\Http\Controllers\PenggunaController::class, 'getCartCount'])->name('pengguna.cart.count');
+
+        // Checkout routes
+        Route::get('/pengguna/checkout', [\App\Http\Controllers\PenggunaController::class, 'checkout'])->name('pengguna.checkout');
+        Route::post('/pengguna/checkout', [\App\Http\Controllers\PenggunaController::class, 'processCheckout'])->name('pengguna.checkout.process');
+
+        // History routes
+        Route::get('/pengguna/history', [\App\Http\Controllers\PenggunaController::class, 'history'])->name('pengguna.history');
+        Route::get('/pengguna/history/{id}', [\App\Http\Controllers\PenggunaController::class, 'detailHistory'])->name('pengguna.history.detail');
+    });
 
     // Default dashboard (redirect ke role masing-masing)
     Route::get('/dashboard', function () {

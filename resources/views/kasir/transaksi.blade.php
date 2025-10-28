@@ -926,6 +926,19 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Nomor Telepon Member <small style="color: var(--color-text-muted);">(Opsional)</small></label>
+                                <div style="position: relative;">
+                                    <input type="text" class="form-input" name="member_phone" placeholder="Contoh: 081234567893" onchange="checkMemberPhone()" oninput="clearMemberInfo()">
+                                    <div id="memberStatus" style="margin-top: 5px; font-size: 12px; display: none;">
+                                        <i class="fas fa-spinner fa-spin"></i> Memeriksa member...
+                                    </div>
+                                    <div id="memberInfo" style="margin-top: 5px; padding: 8px; border-radius: 6px; font-size: 12px; display: none;">
+                                        <!-- Member info will be displayed here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Metode Pembayaran</label>
                                 <select class="form-input" name="payment_method" required>
                                     <option value="">Pilih metode pembayaran</option>
@@ -1234,6 +1247,123 @@
             }
         }
 
+        // Clear member info when user is typing
+        function clearMemberInfo() {
+            const memberStatus = document.getElementById('memberStatus');
+            const memberInfo = document.getElementById('memberInfo');
+            const customerNameInput = document.querySelector('input[name="customer_name"]');
+
+            // Hide status and info
+            memberStatus.style.display = 'none';
+            memberInfo.style.display = 'none';
+
+            // Reset customer name field if it was auto-filled
+            if (customerNameInput.readOnly) {
+                customerNameInput.readOnly = false;
+                customerNameInput.style.backgroundColor = 'var(--color-bg-alt)';
+                customerNameInput.style.color = 'var(--color-text)';
+                customerNameInput.value = '';
+            }
+        }
+
+        // Check member phone number
+        function checkMemberPhone() {
+            const phoneInput = document.querySelector('input[name="member_phone"]');
+            const memberStatus = document.getElementById('memberStatus');
+            const memberInfo = document.getElementById('memberInfo');
+            const customerNameInput = document.querySelector('input[name="customer_name"]');
+
+            const phoneNumber = phoneInput.value.trim();
+
+            // Hide previous status
+            memberStatus.style.display = 'none';
+            memberInfo.style.display = 'none';
+
+            if (!phoneNumber) {
+                return;
+            }
+
+            // Basic phone validation (must start with 08 and be 10-15 digits)
+            const phoneRegex = /^08\d{8,13}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                memberInfo.style.display = 'block';
+                memberInfo.innerHTML = `
+                    <div style="background: var(--warning-color); color: white; padding: 8px; border-radius: 6px;">
+                        <i class="fas fa-exclamation-triangle"></i> Format nomor telepon tidak valid
+                        <br><small>Contoh format yang benar: 081234567893</small>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show loading status
+            memberStatus.style.display = 'block';
+
+            // Make AJAX request to check member
+            fetch('{{ route("kasir.check-member") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    phone: phoneNumber,
+                    _token: '{{ csrf_token() }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                memberStatus.style.display = 'none';
+                memberInfo.style.display = 'block';
+
+                if (data.success && data.member) {
+                    // Member found - show member info
+                    memberInfo.innerHTML = `
+                        <div style="background: var(--success-color); color: white; padding: 8px; border-radius: 6px;">
+                            <i class="fas fa-check-circle"></i> Member ditemukan: <strong>${data.member.nama}</strong>
+                            <br><small>Bergabung sejak: ${data.member.created_at}</small>
+                        </div>
+                    `;
+
+                    // Auto-fill customer name
+                    customerNameInput.value = data.member.nama;
+                    customerNameInput.readOnly = true;
+                    customerNameInput.style.backgroundColor = 'var(--success-color)';
+                    customerNameInput.style.color = 'white';
+                } else {
+                    // Member not found
+                    memberInfo.innerHTML = `
+                        <div style="background: var(--warning-color); color: white; padding: 8px; border-radius: 6px;">
+                            <i class="fas fa-exclamation-triangle"></i> Nomor telepon tidak terdaftar sebagai member
+                            <br><small>Transaksi akan dilanjutkan sebagai pelanggan biasa</small>
+                        </div>
+                    `;
+
+                    // Reset customer name field
+                    customerNameInput.readOnly = false;
+                    customerNameInput.style.backgroundColor = 'var(--color-bg-alt)';
+                    customerNameInput.style.color = 'var(--color-text)';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking member:', error);
+                memberStatus.style.display = 'none';
+                memberInfo.style.display = 'block';
+                memberInfo.innerHTML = `
+                    <div style="background: var(--error-color); color: white; padding: 8px; border-radius: 6px;">
+                        <i class="fas fa-times-circle"></i> Gagal memeriksa data member
+                        <br><small>Silakan coba lagi atau lanjutkan tanpa member</small>
+                    </div>
+                `;
+
+                // Reset customer name field
+                customerNameInput.readOnly = false;
+                customerNameInput.style.backgroundColor = 'var(--color-bg-alt)';
+                customerNameInput.style.color = 'var(--color-text)';
+            });
+        }
+
         // Handle payment method change
         document.querySelector('select[name="payment_method"]').addEventListener('change', function() {
             const cashPaymentGroup = document.getElementById('cashPaymentGroup');
@@ -1342,6 +1472,7 @@
         // Process transaction request
         function processTransactionRequest() {
             const customerName = document.querySelector('input[name="customer_name"]').value;
+            const memberPhone = document.querySelector('input[name="member_phone"]').value;
             const paymentMethod = document.querySelector('select[name="payment_method"]').value;
             const cashAmount = paymentMethod === 'cash' ? parseFloat(document.querySelector('input[name="cash_amount"]').value) || 0 : 0;
 
@@ -1351,6 +1482,7 @@
 
             const transactionData = {
                 customer_name: customerName,
+                member_phone: memberPhone || null,
                 payment_method: paymentMethod,
                 cash_amount: paymentMethod === 'cash' ? cashAmount : null,
                 items: cart.map(item => ({
@@ -1403,6 +1535,17 @@
                     cart = [];
                     document.getElementById('checkoutForm').reset();
                     document.getElementById('changeAmount').textContent = '';
+
+                    // Reset member info
+                    document.getElementById('memberStatus').style.display = 'none';
+                    document.getElementById('memberInfo').style.display = 'none';
+
+                    // Reset customer name field style
+                    const customerNameInput = document.querySelector('input[name="customer_name"]');
+                    customerNameInput.readOnly = false;
+                    customerNameInput.style.backgroundColor = 'var(--color-bg-alt)';
+                    customerNameInput.style.color = 'var(--color-text)';
+
                     updateCartDisplay();
 
                     // Refresh product grid to update stock
