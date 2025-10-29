@@ -370,29 +370,27 @@ class PenggunaController extends Controller
             // Buat transaksi
             $transaksi = Transaksi::create([
                 'kode_transaksi' => 'TRX' . date('YmdHis') . rand(100, 999),
-                'user_id' => Auth::id(),
+                'member_id' => Auth::id(), // Member yang melakukan transaksi
                 'customer_name' => $request->customer_name,
                 'payment_method' => $request->payment_method,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total_amount' => $total,
-                'status' => 'completed',
+                'status' => 'waiting_confirmation', // Perlu konfirmasi kasir
                 'notes' => $request->notes
             ]);
 
-            // Buat detail transaksi dan update stok
+            // Buat detail transaksi (stok belum dikurangi karena masih menunggu konfirmasi)
             foreach ($cart as $item) {
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $item['id'],
                     'quantity' => $item['quantity'],
-                    'harga_satuan' => $item['harga'],
+                    'harga' => $item['harga'],
                     'subtotal' => $item['harga'] * $item['quantity']
                 ]);
 
-                // Update stok
-                $produk = Produk::find($item['id']);
-                $produk->decrement('stok', $item['quantity']);
+                // Stok akan dikurangi setelah kasir konfirmasi transaksi
             }
 
             // Kosongkan keranjang

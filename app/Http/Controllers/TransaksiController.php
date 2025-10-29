@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -33,19 +34,44 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'member_phone' => 'nullable|string|max:15',
-            'payment_method' => 'required|in:cash,card,transfer',
-            'items' => 'required|array|min:1',
-            'items.*.id' => 'required|exists:produks,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.price' => 'required|numeric|min:0',
-            'subtotal' => 'required|numeric|min:0',
-            'tax' => 'required|numeric|min:0',
-            'total_amount' => 'required|numeric|min:0',
-            'cash_amount' => 'nullable|numeric|min:0',
+        // Log the incoming request for debugging
+        Log::info('Transaction store request received', [
+            'method' => $request->method(),
+            'content_type' => $request->header('Content-Type'),
+            'data' => $request->all(),
+            'user_id' => Auth::id(),
+            'user_role' => Auth::user()->role ?? 'guest'
         ]);
+
+        try {
+            $validatedData = $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'member_phone' => 'nullable|string|max:15',
+                'payment_method' => 'required|in:cash,card,transfer',
+                'items' => 'required|array|min:1',
+                'items.*.id' => 'required|exists:produks,id',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.price' => 'required|numeric|min:0',
+                'subtotal' => 'required|numeric|min:0',
+                'tax' => 'required|numeric|min:0',
+                'total_amount' => 'required|numeric|min:0',
+                'cash_amount' => 'nullable|numeric|min:0',
+            ]);
+
+            Log::info('Validation passed', ['validated_data' => $validatedData]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         try {
             // Mulai database transaction
@@ -55,7 +81,8 @@ class TransaksiController extends Controller
             $member = null;
             if ($request->member_phone) {
                 $member = User::where('role', 'pengguna')
-                            ->where('nomor_telepon', $request->member_phone)
+                            ->where('email', 'LIKE', '%' . $request->member_phone . '%')
+                            ->orWhere('nama', 'LIKE', '%' . $request->member_phone . '%')
                             ->first();
             }
 
@@ -100,7 +127,7 @@ class TransaksiController extends Controller
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $item['id'],
                     'quantity' => $item['quantity'],
-                    'harga_satuan' => $item['price'],
+                    'harga' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],
                 ]);
 
@@ -122,10 +149,21 @@ class TransaksiController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
 
+            Log::error('Transaction store error: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'user_id' => Auth::id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
+                'message' => $e->getMessage(),
+                'error_details' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'type' => get_class($e)
+                ]
+            ], 500);
         }
     }
 
@@ -218,9 +256,12 @@ class TransaksiController extends Controller
         ]);
 
         try {
-            // Cari user dengan role 'pengguna' berdasarkan nomor telepon
+            // Cari user dengan role 'pengguna' berdasarkan email atau nama yang mengandung nomor telepon
             $member = User::where('role', 'pengguna')
-                          ->where('nomor_telepon', $request->phone)
+                          ->where(function($query) use ($request) {
+                              $query->where('email', 'LIKE', '%' . $request->phone . '%')
+                                    ->orWhere('nama', 'LIKE', '%' . $request->phone . '%');
+                          })
                           ->first();
 
             if ($member) {
@@ -230,7 +271,6 @@ class TransaksiController extends Controller
                         'id' => $member->id,
                         'nama' => $member->nama,
                         'email' => $member->email,
-                        'telepon' => $member->nomor_telepon,
                         'created_at' => $member->created_at->format('d/m/Y')
                     ]
                 ]);

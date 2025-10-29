@@ -480,6 +480,23 @@ body {
                     <i class="fas fa-cash-register"></i>
                     <span>Transaksi</span>
                 </a>
+                <a href="{{ route('kasir.transaksi-pengguna') }}" class="menu-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Transaksi Pengguna</span>
+                    @if($transaksiMenungguKonfirmasi > 0)
+                        <span style="
+                            background: #ef4444;
+                            color: white;
+                            font-size: 10px;
+                            font-weight: bold;
+                            padding: 2px 6px;
+                            border-radius: 10px;
+                            margin-left: auto;
+                            min-width: 18px;
+                            text-align: center;
+                        ">{{ $transaksiMenungguKonfirmasi }}</span>
+                    @endif
+                </a>
                 <a href="#" class="menu-item">
                     <i class="fas fa-boxes"></i>
                     <span>Produk</span>
@@ -557,6 +574,10 @@ body {
                         <h3>Item Terjual</h3>
                         <div class="stat-number">{{ $totalItemTerjualHariIni ?? 0 }}</div>
                     </div>
+                    <div class="stat-card" style="border-bottom-color: #ef4444;">
+                        <h3>Menunggu Konfirmasi</h3>
+                        <div class="stat-number" style="color: #ef4444;">{{ $transaksiMenungguKonfirmasi ?? 0 }}</div>
+                    </div>
                 </div>
 
                 <!-- Quick Actions -->
@@ -565,6 +586,24 @@ body {
                     <div class="action-buttons">
                         <a href="{{ route('kasir.transaksi') }}" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-shopping-cart"></i> Transaksi Baru
+                        </a>
+                        <a href="{{ route('kasir.transaksi-pengguna') }}" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <i class="fas fa-user-check"></i> Konfirmasi Transaksi
+                            @if($transaksiMenungguKonfirmasi > 0)
+                                <span style="
+                                    position: absolute;
+                                    top: -8px;
+                                    right: -8px;
+                                    background: #ef4444;
+                                    color: white;
+                                    font-size: 10px;
+                                    font-weight: bold;
+                                    padding: 2px 6px;
+                                    border-radius: 10px;
+                                    min-width: 18px;
+                                    text-align: center;
+                                ">{{ $transaksiMenungguKonfirmasi }}</span>
+                            @endif
                         </a>
                         <button class="action-btn">
                             <i class="fas fa-eye"></i> Lihat Produk

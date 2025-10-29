@@ -813,6 +813,18 @@
                     </div>
                 </div>
 
+                <!-- Info Konfirmasi -->
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin: 20px 0; color: #3b82f6;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                        <strong>Informasi Penting</strong>
+                    </div>
+                    <p style="font-size: 13px; line-height: 1.5; margin: 0;">
+                        Transaksi Anda akan diproses setelah dikonfirmasi oleh kasir.
+                        Stok produk akan dikurangi setelah konfirmasi diterima.
+                    </p>
+                </div>
+
                 <button type="submit"
                         form="checkoutForm"
                         class="btn-place-order"
@@ -884,10 +896,11 @@
 
                     // Show success message
                     const message = `
-                        Transaksi berhasil!
+                        Transaksi berhasil dibuat!
                         Kode Transaksi: ${data.kode_transaksi}
 
-                        Terima kasih atas pembelian Anda.
+                        Transaksi Anda sedang menunggu konfirmasi dari kasir.
+                        Anda dapat melihat status transaksi di menu History.
                     `;
 
                     if (confirm(message + '\n\nKlik OK untuk melihat history transaksi.')) {

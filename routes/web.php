@@ -58,10 +58,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/kasir/check-member', [TransaksiController::class, 'checkMember'])->name('kasir.check-member');
         Route::get('/kasir/transaksi/{id}/print', [TransaksiController::class, 'printReceipt'])->name('kasir.transaksi.print');
 
+        // Debug route for testing
+        Route::post('/kasir/debug-transaction', [\App\Http\Controllers\DebugController::class, 'testTransactionData'])->name('kasir.debug-transaction');
+        Route::get('/kasir/test-transaction', function() {
+            return view('test-transaction');
+        })->name('kasir.test-transaction');
+
         // History routes
         Route::get('/kasir/history', [\App\Http\Controllers\HistoryController::class, 'index'])->name('kasir.history');
         Route::get('/kasir/history/{id}', [\App\Http\Controllers\HistoryController::class, 'show'])->name('kasir.history.show');
         Route::get('/kasir/history/{id}/print', [\App\Http\Controllers\HistoryController::class, 'printReceipt'])->name('kasir.history.print');
+
+        // Transaksi pengguna routes
+        Route::get('/kasir/transaksi-pengguna', [KasirDashboardController::class, 'transaksiPengguna'])->name('kasir.transaksi-pengguna');
+        Route::get('/kasir/transaksi-pengguna/{id}', [KasirDashboardController::class, 'detailTransaksiPengguna'])->name('kasir.transaksi-pengguna.detail');
+        Route::post('/kasir/transaksi-pengguna/{id}/konfirmasi', [KasirDashboardController::class, 'konfirmasiTransaksi'])->name('kasir.transaksi-pengguna.konfirmasi');
+        Route::post('/kasir/transaksi-pengguna/{id}/tolak', [KasirDashboardController::class, 'tolakTransaksi'])->name('kasir.transaksi-pengguna.tolak');
 
         // Laporan routes
         Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');

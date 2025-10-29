@@ -13,12 +13,12 @@ class TransaksiDetail extends Model
         'transaksi_id',
         'produk_id',
         'quantity',
-        'harga_satuan',
+        'harga',
         'subtotal'
     ];
 
     protected $casts = [
-        'harga_satuan' => 'decimal:2',
+        'harga' => 'decimal:2',
         'subtotal' => 'decimal:2',
         'quantity' => 'integer',
     ];

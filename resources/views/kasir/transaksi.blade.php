@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Transaksi - AeruStore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1304,12 +1305,12 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     phone: phoneNumber,
-                    _token: '{{ csrf_token() }}'
+                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 })
             })
             .then(response => response.json())
@@ -1429,7 +1430,8 @@
                     return processTransactionRequest();
                 })
                 .catch(error => {
-                    alert(error.message);
+                    console.error('Transaction error:', error);
+                    alert('Error: ' + error.message);
                 })
                 .finally(() => {
                     // Re-enable button
@@ -1493,22 +1495,47 @@
                 subtotal: subtotal,
                 tax: tax,
                 total_amount: cartTotal,
-                _token: '{{ csrf_token() }}'
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             };
 
-            // Send to backend
+            console.log('Sending transaction data:', transactionData);
+
+            // Send to backend using FormData (alternative approach)
+            const formData = new FormData();
+            formData.append('customer_name', transactionData.customer_name);
+            formData.append('member_phone', transactionData.member_phone);
+            formData.append('payment_method', transactionData.payment_method);
+            formData.append('cash_amount', transactionData.cash_amount);
+            formData.append('subtotal', transactionData.subtotal);
+            formData.append('tax', transactionData.tax);
+            formData.append('total_amount', transactionData.total_amount);
+            formData.append('_token', transactionData._token);
+
+            // Add items as JSON string or separate fields
+            transactionData.items.forEach((item, index) => {
+                formData.append(`items[${index}][id]`, item.id);
+                formData.append(`items[${index}][quantity]`, item.quantity);
+                formData.append(`items[${index}][price]`, item.price);
+            });
+
             return fetch('{{ route("kasir.transaksi.store") }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify(transactionData)
+                credentials: 'same-origin',
+                body: formData
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Try to get the JSON error response
+                    return response.json().then(errorData => {
+                        throw new Error(`HTTP ${response.status}: ${errorData.message || 'Unknown error'}`);
+                    }).catch(() => {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    });
                 }
                 return response.json();
             })

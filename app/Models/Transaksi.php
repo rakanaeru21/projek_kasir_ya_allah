@@ -21,7 +21,9 @@ class Transaksi extends Model
         'cash_amount',
         'change_amount',
         'status',
-        'notes'
+        'notes',
+        'confirmed_at',
+        'cancelled_at'
     ];
 
     protected $casts = [
@@ -30,6 +32,8 @@ class Transaksi extends Model
         'total_amount' => 'decimal:2',
         'cash_amount' => 'decimal:2',
         'change_amount' => 'decimal:2',
+        'confirmed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     /**
