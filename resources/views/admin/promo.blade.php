@@ -840,7 +840,7 @@ body {
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2><i class="fas fa-cash-register"></i> Kasir Yaallah</h2>
+                <h2><i class="fas fa-cash-register"></i> AeruStore</h2>
                 <p>Admin Panel</p>
             </div>
 
