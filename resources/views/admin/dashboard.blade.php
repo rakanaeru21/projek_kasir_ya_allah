@@ -504,7 +504,7 @@ body {
                     <i class="fas fa-tags"></i>
                     <span>Promo</span>
                 </a>
-                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                <a href="{{ route('admin.user-management') }}" class="menu-item {{ request()->routeIs('admin.user-management*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </a>
@@ -633,9 +633,9 @@ body {
                         <a href="{{ route('admin.promo') }}" class="action-btn">
                             <i class="fas fa-tags"></i> Kelola Promo
                         </a>
-                        <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">
+                        <a href="{{ route('admin.user-management') }}" class="action-btn">
                             <i class="fas fa-users"></i> User Management
-                        </button>
+                        </a>
                         <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">
                             <i class="fas fa-chart-bar"></i> Laporan Sistem
                         </button>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
@@ -37,6 +38,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/promo/{promo}', [PromoController::class, 'show'])->name('admin.promo.show');
         Route::put('/admin/promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
         Route::delete('/admin/promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
+
+        // User Management routes
+        Route::get('/admin/user-management', [UserManagementController::class, 'index'])->name('admin.user-management');
+        Route::get('/admin/user-management/{id}', [UserManagementController::class, 'show'])->name('admin.user-management.show');
+        Route::put('/admin/user-management/{id}/role', [UserManagementController::class, 'updateRole'])->name('admin.user-management.update-role');
+        Route::put('/admin/user-management/{id}/status', [UserManagementController::class, 'toggleStatus'])->name('admin.user-management.toggle-status');
     });
 
     // Kasir routes

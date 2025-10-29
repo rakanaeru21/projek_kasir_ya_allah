@@ -857,7 +857,7 @@ body {
                     <i class="fas fa-tags"></i>
                     <span>Promo</span>
                 </a>
-                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                <a href="{{ route('admin.user-management') }}" class="menu-item {{ request()->routeIs('admin.user-management*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </a>
