@@ -125,6 +125,8 @@ class TransaksiController extends Controller
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $item['id'],
+                    'nama_produk' => $produk->nama_produk,
+                    'kategori_produk' => $produk->kategori,
                     'quantity' => $item['quantity'],
                     'harga' => $item['price'],
                     'subtotal' => $item['price'] * $item['quantity'],

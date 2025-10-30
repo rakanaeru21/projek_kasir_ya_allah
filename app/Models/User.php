@@ -34,4 +34,36 @@ class User extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
+
+    /**
+     * Relasi ke transaksi dimana user ini sebagai kasir
+     */
+    public function transaksiSebagaiKasir()
+    {
+        return $this->hasMany(Transaksi::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke transaksi dimana user ini sebagai pengguna
+     */
+    public function transaksiSebagaiPengguna()
+    {
+        return $this->hasMany(Transaksi::class, 'pengguna_id');
+    }
+
+    /**
+     * Scope untuk hanya mengambil kasir
+     */
+    public function scopeKasir($query)
+    {
+        return $query->where('role', 'kasir');
+    }
+
+    /**
+     * Scope untuk user aktif
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

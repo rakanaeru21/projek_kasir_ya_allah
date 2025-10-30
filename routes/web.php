@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\AdminLaporanController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/user-management/{id}', [UserManagementController::class, 'show'])->name('admin.user-management.show');
         Route::put('/admin/user-management/{id}/role', [UserManagementController::class, 'updateRole'])->name('admin.user-management.update-role');
         Route::put('/admin/user-management/{id}/status', [UserManagementController::class, 'toggleStatus'])->name('admin.user-management.toggle-status');
+
+        // Laporan Admin routes
+        Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan');
+        Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPdf'])->name('admin.laporan.export.pdf');
+        Route::get('/admin/laporan/export-excel', [AdminLaporanController::class, 'exportExcel'])->name('admin.laporan.export.excel');
     });
 
     // Kasir routes

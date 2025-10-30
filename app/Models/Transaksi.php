@@ -79,4 +79,60 @@ class Transaksi extends Model
 
         return 'TRX' . $date . sprintf('%04d', $newNumber);
     }
+
+    /**
+     * Scope untuk transaksi hari ini
+     */
+    public function scopeToday($query)
+    {
+        return $query->whereDate('created_at', today());
+    }
+
+    /**
+     * Scope untuk transaksi dalam rentang tanggal
+     */
+    public function scopeWhereBetweenDates($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('created_at', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope untuk transaksi berdasarkan metode pembayaran
+     */
+    public function scopeByPaymentMethod($query, $method)
+    {
+        return $query->where('payment_method', $method);
+    }
+
+    /**
+     * Scope untuk transaksi yang sudah dikonfirmasi
+     */
+    public function scopeConfirmed($query)
+    {
+        return $query->where('status', 'confirmed');
+    }
+
+    /**
+     * Accessor untuk format rupiah
+     */
+    public function getFormattedTotalAttribute()
+    {
+        return 'Rp ' . number_format((float) $this->total_amount, 0, ',', '.');
+    }
+
+    /**
+     * Relasi ke kasir (user yang melakukan transaksi)
+     */
+    public function kasir()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke pengguna (jika ada)
+     */
+    public function pengguna()
+    {
+        return $this->belongsTo(User::class, 'pengguna_id');
+    }
 }

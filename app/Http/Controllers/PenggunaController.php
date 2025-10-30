@@ -382,9 +382,13 @@ class PenggunaController extends Controller
 
             // Buat detail transaksi (stok belum dikurangi karena masih menunggu konfirmasi)
             foreach ($cart as $item) {
+                $produk = Produk::find($item['id']);
+
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $item['id'],
+                    'nama_produk' => $produk ? $produk->nama_produk : 'Produk Tidak Ditemukan',
+                    'kategori_produk' => $produk ? $produk->kategori : 'Tidak Diketahui',
                     'quantity' => $item['quantity'],
                     'harga' => $item['harga'],
                     'subtotal' => $item['harga'] * $item['quantity']

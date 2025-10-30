@@ -508,7 +508,7 @@ body {
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </a>
-                <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
+                <a href="{{ route('admin.laporan') }}" class="menu-item {{ request()->routeIs('admin.laporan*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i>
                     <span>Laporan</span>
                 </a>
@@ -636,9 +636,9 @@ body {
                         <a href="{{ route('admin.user-management') }}" class="action-btn">
                             <i class="fas fa-users"></i> User Management
                         </a>
-                        <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">
+                        <a href="{{ route('admin.laporan') }}" class="action-btn">
                             <i class="fas fa-chart-bar"></i> Laporan Sistem
-                        </button>
+                        </a>
                         <button class="action-btn" onclick="alert('Fitur dalam pengembangan')">
                             <i class="fas fa-chart-line"></i> Analytics
                         </button>
