@@ -1062,24 +1062,24 @@
                 console.log('Ignoring duplicate addToCart call - debouncing');
                 return;
             }
-            
+
             isAddingToCart = true;
-            
+
             console.log('=== addToCart called ===');
             console.log('Parameters:', { id, name, price, stock, promoInfo });
             console.log('Current cart before add:', JSON.parse(JSON.stringify(cart)));
 
             // Check if item already exists in cart
             const existingItem = cart.find(item => item.id === id);
-            
+
             // Calculate total quantity already in cart for this product
             const totalInCart = existingItem ? existingItem.quantity : 0;
             const availableStock = stock - totalInCart;
 
-            console.log('Stock calculation:', { 
-                totalInCart, 
-                availableStock, 
-                originalStock: stock 
+            console.log('Stock calculation:', {
+                totalInCart,
+                availableStock,
+                originalStock: stock
             });
 
             if (existingItem) {
@@ -1123,7 +1123,7 @@
             console.log('Cart after add:', JSON.parse(JSON.stringify(cart)));
             console.log('=== addToCart completed ===');
             updateCartDisplay();
-            
+
             // Reset debouncing flag after a short delay
             setTimeout(() => {
                 isAddingToCart = false;
@@ -1141,7 +1141,7 @@
             // Define colors based on type
             let backgroundColor;
             let iconName;
-            
+
             switch(type) {
                 case 'success':
                     backgroundColor = 'var(--success-color)';
