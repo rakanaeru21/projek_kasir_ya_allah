@@ -528,6 +528,31 @@ body {
                     <i class="fas fa-cash-register"></i>
                     <span>Transaksi</span>
                 </a>
+                <a href="{{ route('kasir.transaksi-pengguna') }}" class="menu-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Transaksi Pengguna</span>
+                    @php
+                        $transaksiMenungguKonfirmasi = \App\Models\Transaksi::where('status', 'menunggu_konfirmasi')->count();
+                    @endphp
+                    @if($transaksiMenungguKonfirmasi > 0)
+                        <span style="
+                            background: linear-gradient(135deg, #ff4757, #ff3742);
+                            color: white;
+                            font-size: 11px;
+                            font-weight: 600;
+                            padding: 2px 6px;
+                            border-radius: 50%;
+                            margin-left: auto;
+                            min-width: 18px;
+                            height: 18px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 2px 4px rgba(255, 71, 87, 0.4);
+                            text-align: center;
+                        ">{{ $transaksiMenungguKonfirmasi }}</span>
+                    @endif
+                </a>
                 <a href="#" class="menu-item">
                     <i class="fas fa-boxes"></i>
                     <span>Produk</span>

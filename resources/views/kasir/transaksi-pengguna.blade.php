@@ -120,6 +120,49 @@
             font-weight: 500;
         }
 
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(205, 79, 184, 0.2);
+            background: rgba(15, 35, 50, 0.5);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--color-text);
+        }
+
+        .user-details p {
+            font-size: 12px;
+            opacity: 0.8;
+            color: var(--color-text-muted);
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -137,6 +180,21 @@
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid rgba(205, 79, 184, 0.2);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--color-text);
+            cursor: pointer;
+            margin-right: 16px;
         }
 
         .navbar h2 {
@@ -157,6 +215,16 @@
             font-size: 14px;
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(205, 79, 184, 0.4);
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(205, 79, 184, 0.6);
+        }
+
+        .btn-logout:active {
+            transform: translateY(0);
         }
 
         .container {
@@ -543,22 +611,50 @@
             background: var(--color-error);
         }
 
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-
             .sidebar {
                 transform: translateX(-100%);
             }
 
-            .container {
-                padding: 20px;
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
             }
 
             .navbar {
                 padding: 16px 20px;
+            }
+
+            .navbar h2 {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 20px;
             }
 
             .stats-row {
@@ -579,7 +675,7 @@
 <body>
     <div class="app-layout">
         <!-- Sidebar -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-cash-register"></i> AeruStore</h2>
                 <p>Kasir Panel</p>
@@ -597,6 +693,31 @@
                 <a href="{{ route('kasir.transaksi-pengguna') }}" class="menu-item active">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Transaksi Pengguna</span>
+                    @php
+                        $transaksiMenungguKonfirmasi = \App\Models\Transaksi::where('status', 'menunggu_konfirmasi')->count();
+                    @endphp
+                    @if($transaksiMenungguKonfirmasi > 0)
+                        <span style="
+                            background: linear-gradient(135deg, #ff4757, #ff3742);
+                            color: white;
+                            font-size: 11px;
+                            font-weight: 600;
+                            padding: 2px 6px;
+                            border-radius: 50%;
+                            margin-left: auto;
+                            min-width: 18px;
+                            height: 18px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 2px 4px rgba(255, 71, 87, 0.4);
+                            text-align: center;
+                        ">{{ $transaksiMenungguKonfirmasi }}</span>
+                    @endif
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-boxes"></i>
+                    <span>Produk</span>
                 </a>
                 <a href="{{ route('kasir.history') }}" class="menu-item">
                     <i class="fas fa-history"></i>
@@ -606,19 +727,46 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Laporan</span>
                 </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ substr(auth()->user()->nama, 0, 1) }}
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ auth()->user()->nama }}</h4>
+                        <p>{{ ucfirst(auth()->user()->role) }}</p>
+                    </div>
+                </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="width: 100%;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </div>
         </nav>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Main Content -->
         <main class="main-content">
             <nav class="navbar">
-                <h2>Transaksi Pengguna</h2>
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
+                <div class="navbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h2>Transaksi Pengguna</h2>
+                </div>
+                <div class="navbar-right">
+                    <span style="margin-right: 20px; color: var(--color-text-muted);">
+                        {{ date('l, d F Y') }}
+                    </span>
+                </div>
             </nav>
 
             <div class="container">
@@ -758,6 +906,33 @@
     </div>
 
     <script>
+        // Sidebar Toggle for Mobile
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Close sidebar on window resize if desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
         // Filter functionality
         document.getElementById('statusFilter').addEventListener('change', function() {
             const filterValue = this.value;

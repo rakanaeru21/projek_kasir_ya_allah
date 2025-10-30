@@ -471,7 +471,7 @@ body {
                 <p>Kasir Panel</p>
             </div>
 
-             <div class="sidebar-menu">
+            <div class="sidebar-menu">
                 <a href="{{ route('kasir.dashboard') }}" class="menu-item active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
