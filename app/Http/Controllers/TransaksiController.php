@@ -81,8 +81,7 @@ class TransaksiController extends Controller
             $member = null;
             if ($request->member_phone) {
                 $member = User::where('role', 'pengguna')
-                            ->where('email', 'LIKE', '%' . $request->member_phone . '%')
-                            ->orWhere('nama', 'LIKE', '%' . $request->member_phone . '%')
+                            ->where('nomor_telepon', $request->member_phone)
                             ->first();
             }
 
@@ -256,12 +255,9 @@ class TransaksiController extends Controller
         ]);
 
         try {
-            // Cari user dengan role 'pengguna' berdasarkan email atau nama yang mengandung nomor telepon
+            // Cari user dengan role 'pengguna' berdasarkan nomor telepon
             $member = User::where('role', 'pengguna')
-                          ->where(function($query) use ($request) {
-                              $query->where('email', 'LIKE', '%' . $request->phone . '%')
-                                    ->orWhere('nama', 'LIKE', '%' . $request->phone . '%');
-                          })
+                          ->where('nomor_telepon', $request->phone)
                           ->first();
 
             if ($member) {
