@@ -794,7 +794,7 @@
                         <div class="product-grid" id="productGrid">
                             @forelse($produks as $produk)
                                 <div class="product-card"
-                                    onclick="addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->getFinalPrice() }}, {{ $produk->stok }}, {{ json_encode($produk->getActivePromoInfo()) }})"
+                                    onclick="event.stopPropagation(); addToCart({{ $produk->id }}, '{{ addslashes($produk->nama_produk) }}', {{ $produk->getFinalPrice() }}, {{ $produk->stok }}, {{ json_encode($produk->getActivePromoInfo()) }})"
                                     data-product-id="{{ $produk->id }}"
                                     data-product-name="{{ $produk->nama_produk }}"
                                     data-product-price="{{ $produk->harga_untung }}"
@@ -994,6 +994,7 @@
         // Global variables
         let cart = [];
         let cartTotal = 0;
+        let isAddingToCart = false; // Debouncing flag
 
         // Test function to ensure JavaScript is working
         console.log('JavaScript loaded successfully!');
@@ -1056,24 +1057,47 @@
 
         // Add to cart function
         function addToCart(id, name, price, stock, promoInfo = null) {
-            console.log('Adding to cart:', { id, name, price, stock, promoInfo });
+            // Debouncing to prevent multiple rapid clicks
+            if (isAddingToCart) {
+                console.log('Ignoring duplicate addToCart call - debouncing');
+                return;
+            }
+            
+            isAddingToCart = true;
+            
+            console.log('=== addToCart called ===');
+            console.log('Parameters:', { id, name, price, stock, promoInfo });
+            console.log('Current cart before add:', JSON.parse(JSON.stringify(cart)));
 
             // Check if item already exists in cart
             const existingItem = cart.find(item => item.id === id);
+            
+            // Calculate total quantity already in cart for this product
+            const totalInCart = existingItem ? existingItem.quantity : 0;
+            const availableStock = stock - totalInCart;
+
+            console.log('Stock calculation:', { 
+                totalInCart, 
+                availableStock, 
+                originalStock: stock 
+            });
 
             if (existingItem) {
-                if (existingItem.quantity < stock) {
+                // Check if we can add one more
+                if (availableStock > 0) {
                     existingItem.quantity += 1;
-                    console.log('Item quantity updated:', existingItem);
+                    console.log('Item quantity updated to:', existingItem.quantity);
 
                     // Show confirmation feedback with promo info
                     const promoText = promoInfo && promoInfo.has_promo ? ` (🎯 ${promoInfo.discount_percent}% OFF)` : '';
                     showToast(`${name}${promoText} ditambahkan ke keranjang (${existingItem.quantity})`, 'success');
                 } else {
-                    alert(`Stok tidak mencukupi! Stok tersedia: ${stock}`);
+                    showToast(`Stok tidak mencukupi! Stok tersedia: ${stock}, sudah ada ${totalInCart} di keranjang`, 'error');
+                    isAddingToCart = false; // Reset flag
                     return;
                 }
             } else {
+                // New item
                 if (stock > 0) {
                     const newItem = {
                         id: id,
@@ -1085,18 +1109,25 @@
                     };
                     cart.push(newItem);
                     console.log('New item added to cart:', newItem);
-                    console.log('Cart now contains:', cart);
 
                     // Show confirmation feedback with promo info
                     const promoText = promoInfo && promoInfo.has_promo ? ` (🎯 ${promoInfo.discount_percent}% OFF)` : '';
                     showToast(`${name}${promoText} ditambahkan ke keranjang`, 'success');
                 } else {
-                    alert('Produk habis!');
+                    showToast('Produk habis!', 'error');
+                    isAddingToCart = false; // Reset flag
                     return;
                 }
             }
 
+            console.log('Cart after add:', JSON.parse(JSON.stringify(cart)));
+            console.log('=== addToCart completed ===');
             updateCartDisplay();
+            
+            // Reset debouncing flag after a short delay
+            setTimeout(() => {
+                isAddingToCart = false;
+            }, 300);
         }
 
         // Simple toast notification function
@@ -1107,6 +1138,28 @@
                 existingToast.remove();
             }
 
+            // Define colors based on type
+            let backgroundColor;
+            let iconName;
+            
+            switch(type) {
+                case 'success':
+                    backgroundColor = 'var(--success-color)';
+                    iconName = 'check-circle';
+                    break;
+                case 'error':
+                    backgroundColor = 'var(--error-color)';
+                    iconName = 'times-circle';
+                    break;
+                case 'warning':
+                    backgroundColor = 'var(--warning-color)';
+                    iconName = 'exclamation-triangle';
+                    break;
+                default:
+                    backgroundColor = 'var(--color-primary)';
+                    iconName = 'info-circle';
+            }
+
             // Create toast element
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
@@ -1115,7 +1168,7 @@
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: ${type === 'success' ? 'var(--success-color)' : 'var(--color-primary)'};
+                    background: ${backgroundColor};
                     color: white;
                     padding: 12px 20px;
                     border-radius: 8px;
@@ -1127,7 +1180,7 @@
                     transform: translateX(100%);
                     transition: transform 0.3s ease;
                 ">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <i class="fas fa-${iconName}"></i>
                     ${message}
                 </div>
             `;
@@ -1237,7 +1290,7 @@
                 item.quantity = newQuantity;
                 updateCartDisplay();
             } else {
-                alert('Stok tidak mencukupi!');
+                showToast(`Stok tidak mencukupi! Maksimal: ${item.stock}`, 'error');
             }
         }
 
@@ -1252,8 +1305,8 @@
                 item.quantity = qty;
                 updateCartDisplay();
             } else {
-                alert('Stok tidak mencukupi!');
-                updateCartDisplay();
+                showToast(`Stok tidak mencukupi! Maksimal: ${item.stock}`, 'error');
+                updateCartDisplay(); // Reset the input to current quantity
             }
         }
 
@@ -1629,39 +1682,9 @@
             const productCards = document.querySelectorAll('.product-card');
             console.log('Found', productCards.length, 'product cards');
 
-            // Alternative event listener for product cards (in case onclick doesn't work)
+            // Only add visual feedback, not click handlers (onclick attribute handles the click)
             productCards.forEach((card, index) => {
-                console.log(`Setting up card ${index + 1}:`, card.getAttribute('onclick'));
-
-                card.addEventListener('click', function(e) {
-                    console.log('Card clicked via event listener:', this);
-
-                    // Try onclick attribute first
-                    const onclickAttr = this.getAttribute('onclick');
-                    if (onclickAttr) {
-                        console.log('Executing onclick:', onclickAttr);
-                        try {
-                            eval(onclickAttr);
-                            return;
-                        } catch (error) {
-                            console.error('Error executing onclick:', error);
-                        }
-                    }
-
-                    // Fallback to data attributes
-                    const productId = parseInt(this.getAttribute('data-product-id'));
-                    const productName = this.getAttribute('data-product-name');
-                    const productPrice = parseFloat(this.getAttribute('data-product-price'));
-                    const productStock = parseInt(this.getAttribute('data-product-stock'));
-
-                    console.log('Using data attributes:', { productId, productName, productPrice, productStock });
-
-                    if (productId && productName && productPrice !== null && productStock !== null) {
-                        addToCart(productId, productName, productPrice, productStock);
-                    } else {
-                        console.error('Missing product data attributes');
-                    }
-                });
+                console.log(`Setting up visual feedback for card ${index + 1}`);
 
                 // Add visual feedback on mouseover
                 card.addEventListener('mouseenter', function() {
