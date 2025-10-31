@@ -44,12 +44,43 @@ class PenggunaController extends Controller
         // Item di keranjang
         $cartCount = count(Session::get('cart', []));
 
+        // Data AeruCoin
+        $aerucoinBalance = $user->aerucoin_balance ?? 0;
+
+        // Statistik AeruCoin
+        $totalTopup = \App\Models\AeruCoinTransaction::forUser($userId)
+            ->topup()
+            ->sum('amount');
+
+        $totalUsage = \App\Models\AeruCoinTransaction::forUser($userId)
+            ->usage()
+            ->sum('amount');
+
+        // Riwayat transaksi AeruCoin terbaru
+        $aerucoinTransactionsTerbaru = \App\Models\AeruCoinTransaction::forUser($userId)
+            ->with(['kasir'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Pending AeruCoin requests
+        $pendingRequests = \App\Models\AeruCoinRequest::forUser($userId)
+            ->pending()
+            ->latest()
+            ->limit(3)
+            ->get();
+
         return view('pengguna.dashboard', compact(
             'user',
             'totalTransaksi',
             'totalBelanja',
             'transaksiTerbaru',
-            'cartCount'
+            'cartCount',
+            'aerucoinBalance',
+            'totalTopup',
+            'totalUsage',
+            'aerucoinTransactionsTerbaru',
+            'pendingRequests'
         ));
     }
 

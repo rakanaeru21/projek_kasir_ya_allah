@@ -10,6 +10,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AeruCoinController;
+use App\Http\Controllers\AeruCoinRequestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,6 +97,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/aerucoin/user/by-member/{memberNumber}', [AeruCoinController::class, 'getUserByMember'])->name('aerucoin.user.by-member');
         Route::get('/aerucoin/history', [AeruCoinController::class, 'history'])->name('aerucoin.history');
         Route::get('/aerucoin/check-balance/{phoneNumber}', [AeruCoinController::class, 'checkBalance'])->name('aerucoin.check-balance');
+
+        // AeruCoin Request routes untuk kasir
+        Route::get('/kasir/aerucoin-requests', [\App\Http\Controllers\AeruCoinRequestController::class, 'kasirIndex'])->name('kasir.aerucoin.requests');
+        Route::patch('/kasir/aerucoin-requests/{aerucoinRequest}/approve', [\App\Http\Controllers\AeruCoinRequestController::class, 'approve'])->name('aerucoin.request.approve');
+        Route::patch('/kasir/aerucoin-requests/{aerucoinRequest}/reject', [\App\Http\Controllers\AeruCoinRequestController::class, 'reject'])->name('aerucoin.request.reject');
     });
 
     // Pengguna routes
@@ -119,6 +125,15 @@ Route::middleware('auth')->group(function () {
         // History routes
         Route::get('/pengguna/history', [\App\Http\Controllers\PenggunaController::class, 'history'])->name('pengguna.history');
         Route::get('/pengguna/history/{id}', [\App\Http\Controllers\PenggunaController::class, 'detailHistory'])->name('pengguna.history.detail');
+
+        // AeruCoin Request routes untuk pengguna
+        Route::get('/pengguna/aerucoin-requests', [\App\Http\Controllers\AeruCoinRequestController::class, 'index'])->name('aerucoin.request.index');
+        Route::post('/pengguna/aerucoin-requests', [\App\Http\Controllers\AeruCoinRequestController::class, 'store'])->name('aerucoin.request.store');
+    });
+
+    // Shared AeruCoin Request routes (untuk semua authenticated users)
+    Route::middleware('auth')->group(function () {
+        Route::get('/aerucoin-requests/{aerucoinRequest}', [\App\Http\Controllers\AeruCoinRequestController::class, 'show'])->name('aerucoin.request.show');
     });
 
     // Default dashboard (redirect ke role masing-masing)

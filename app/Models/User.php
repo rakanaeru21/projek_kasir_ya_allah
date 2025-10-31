@@ -70,6 +70,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke request AeruCoin yang diajukan user
+     */
+    public function aerucoinRequests()
+    {
+        return $this->hasMany(AeruCoinRequest::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke request AeruCoin yang disetujui/ditolak oleh kasir
+     */
+    public function approvedAeruCoinRequests()
+    {
+        return $this->hasMany(AeruCoinRequest::class, 'approved_by');
+    }
+
+    /**
      * Scope untuk hanya mengambil kasir
      */
     public function scopeKasir($query)
