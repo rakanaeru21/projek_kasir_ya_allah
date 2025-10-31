@@ -784,6 +784,10 @@ body {
                     <i class="fas fa-cash-register"></i>
                     <span>Transaksi</span>
                 </a>
+                <a href="{{ route('aerucoin.index') }}" class="menu-item">
+                    <i class="fas fa-coins"></i>
+                    <span>Topup AeruCoin</span>
+                </a>
                 <a href="{{ route('kasir.transaksi-pengguna') }}" class="menu-item">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Transaksi Pengguna</span>
@@ -808,10 +812,6 @@ body {
                             text-align: center;
                         ">{{ $transaksiMenungguKonfirmasi }}</span>
                     @endif
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-boxes"></i>
-                    <span>Produk</span>
                 </a>
                 <a href="{{ route('kasir.history') }}" class="menu-item">
                     <i class="fas fa-history"></i>

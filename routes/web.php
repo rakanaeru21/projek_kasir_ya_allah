@@ -9,6 +9,7 @@ use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KasirDashboardController;
+use App\Http\Controllers\AeruCoinController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -87,6 +88,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/laporan', [LaporanController::class, 'index'])->name('kasir.laporan');
         Route::get('/kasir/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('kasir.laporan.export-pdf');
         Route::get('/kasir/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('kasir.laporan.export-excel');
+
+        // AeruCoin routes
+        Route::get('/aerucoin', [AeruCoinController::class, 'index'])->name('aerucoin.index');
+        Route::post('/aerucoin/topup', [AeruCoinController::class, 'topup'])->name('aerucoin.topup');
+        Route::get('/aerucoin/user/{id}', [AeruCoinController::class, 'getUserDetail'])->name('aerucoin.user.detail');
+        Route::get('/aerucoin/history', [AeruCoinController::class, 'history'])->name('aerucoin.history');
+        Route::get('/aerucoin/check-balance/{phoneNumber}', [AeruCoinController::class, 'checkBalance'])->name('aerucoin.check-balance');
     });
 
     // Pengguna routes
