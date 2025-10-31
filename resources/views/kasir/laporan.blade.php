@@ -788,6 +788,10 @@ body {
                     <i class="fas fa-coins"></i>
                     <span>Topup AeruCoin</span>
                 </a>
+                <a href="{{ route('kasir.aerucoin.requests') }}" class="menu-item">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Request AeruCoin</span>
+                </a>
                 <a href="{{ route('kasir.transaksi-pengguna') }}" class="menu-item">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Transaksi Pengguna</span>

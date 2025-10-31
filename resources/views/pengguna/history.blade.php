@@ -720,6 +720,10 @@
                 <i class="fas fa-history"></i>
                 <span>Riwayat Belanja</span>
             </a>
+            <a href="{{ route('aerucoin.request.index') }}" class="nav-item">
+                <i class="fas fa-coins"></i>
+                <span>Request AeruCoin</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">

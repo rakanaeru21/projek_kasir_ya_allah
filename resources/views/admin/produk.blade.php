@@ -946,6 +946,10 @@ body {
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </a>
+                <a href="{{ route('kasir.aerucoin.requests') }}" class="menu-item {{ request()->routeIs('kasir.aerucoin.requests*') ? 'active' : '' }}">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Request AeruCoin</span>
+                </a>
                 <a href="#" class="menu-item" onclick="alert('Fitur dalam pengembangan'); return false;">
                     <i class="fas fa-chart-bar"></i>
                     <span>Laporan</span>
