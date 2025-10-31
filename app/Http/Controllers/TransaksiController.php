@@ -92,12 +92,12 @@ class TransaksiController extends Controller
             // Validasi stok dan status produk
             foreach ($request->items as $item) {
                 $produk = Produk::findOrFail($item['id']);
-                
+
                 // Cek apakah produk masih aktif
                 if ($produk->status !== 'aktif') {
                     throw new \Exception("Produk {$produk->nama_produk} sudah tidak aktif dan tidak dapat dijual!");
                 }
-                
+
                 // Cek stok
                 if ($produk->stok < $item['quantity']) {
                     throw new \Exception("Stok produk {$produk->nama_produk} tidak mencukupi! Stok tersedia: {$produk->stok}");
@@ -246,7 +246,7 @@ class TransaksiController extends Controller
 
         foreach ($request->items as $item) {
             $produk = Produk::findOrFail($item['id']);
-            
+
             // Cek status produk
             if ($produk->status !== 'aktif') {
                 $stockErrors[] = [
@@ -257,7 +257,7 @@ class TransaksiController extends Controller
                 ];
                 continue;
             }
-            
+
             // Cek stok
             if ($produk->stok < $item['quantity']) {
                 $stockErrors[] = [

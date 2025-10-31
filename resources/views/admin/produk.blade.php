@@ -1460,7 +1460,7 @@ body {
                 '• Aksi ini TIDAK DAPAT DIBATALKAN!\n\n' +
                 'Pilih "OK" untuk HAPUS PAKSA atau "Cancel" untuk membatalkan.'
             );
-            
+
             if (userChoice) {
                 forceDeleteProduk(id);
             }
@@ -1480,7 +1480,7 @@ body {
             }
 
             const confirmText = prompt('Ketik "HAPUS" (tanpa tanda kutip) untuk konfirmasi penghapusan:');
-            
+
             if (confirmText !== 'HAPUS') {
                 alert('Konfirmasi tidak sesuai. Penghapusan dibatalkan.');
                 return;

@@ -784,7 +784,7 @@
         // Auto-check product status every 30 seconds
         function checkProductStatus() {
             const currentCartCount = {{ count($cart) }};
-            
+
             // Only check if cart is not empty
             if (currentCartCount === 0) return;
 
@@ -807,7 +807,7 @@
                 tempDiv.innerHTML = html;
                 const newCartItems = tempDiv.querySelectorAll('.cart-item').length;
                 const currentCartItems = document.querySelectorAll('.cart-item').length;
-                
+
                 if (newCartItems < currentCartItems) {
                     showToast('⚠️ Beberapa produk dalam keranjang sudah tidak tersedia dan telah dihapus otomatis.', 'warning');
                     setTimeout(() => {

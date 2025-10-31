@@ -208,7 +208,7 @@ class PenggunaController extends Controller
             $produk = Produk::where('id', $item['id'])
                 ->where('status', 'aktif')
                 ->first();
-                
+
             if ($produk) {
                 $produk->updateDiscountPrice();
                 $cart[$key]['harga'] = $produk->getFinalPrice();
@@ -334,12 +334,12 @@ class PenggunaController extends Controller
             $produk = Produk::where('id', $item['id'])
                 ->where('status', 'aktif')
                 ->first();
-                
+
             if (!$produk) {
                 return redirect()->route('pengguna.keranjang')
                     ->with('error', 'Ada produk yang sudah tidak aktif. Silakan periksa keranjang.');
             }
-            
+
             if ($produk->stok < $item['quantity']) {
                 return redirect()->route('pengguna.keranjang')
                     ->with('error', 'Ada produk yang stoknya tidak mencukupi. Silakan periksa keranjang.');
@@ -386,11 +386,11 @@ class PenggunaController extends Controller
                     ->where('id', $item['id'])
                     ->where('status', 'aktif')
                     ->first();
-                    
+
                 if (!$produk) {
                     throw new \Exception("Produk {$item['nama_produk']} sudah tidak aktif atau tidak ditemukan");
                 }
-                
+
                 if ($produk->stok < $item['quantity']) {
                     throw new \Exception("Stok produk {$item['nama_produk']} tidak mencukupi");
                 }

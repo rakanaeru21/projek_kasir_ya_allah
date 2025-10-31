@@ -2,7 +2,7 @@
 
 /**
  * Test Script untuk Fitur Pembatasan Produk Nonaktif
- * 
+ *
  * Script ini menguji apakah produk nonaktif benar-benar tidak bisa diperjualbelikan
  */
 
@@ -50,7 +50,7 @@ $produkNonaktif = Produk::where('status', 'nonaktif')->first();
 
 if ($produkNonaktif) {
     echo "   Produk nonaktif ditemukan: {$produkNonaktif->nama_produk}\n";
-    
+
     // Test apakah bisa diakses via getProduct method
     try {
         $testProduk = Produk::with('promos')
@@ -71,10 +71,10 @@ echo "4. Testing Stock Check with Nonaktif Product\n";
 
 if ($produkNonaktif) {
     $stockErrors = [];
-    
+
     // Simulasi logic dari checkStock method
     $testItem = ['id' => $produkNonaktif->id, 'quantity' => 1];
-    
+
     if ($produkNonaktif->status !== 'aktif') {
         $stockErrors[] = [
             'product_id' => $testItem['id'],
@@ -83,7 +83,7 @@ if ($produkNonaktif) {
             'message' => 'Produk sudah tidak aktif dan tidak dapat dijual'
         ];
     }
-    
+
     if (!empty($stockErrors)) {
         echo "   ✅ Stock check mendeteksi produk nonaktif:\n";
         foreach ($stockErrors as $error) {

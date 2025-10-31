@@ -215,7 +215,7 @@ class ProdukController extends Controller
     {
         try {
             $produk = Produk::findOrFail($id);
-            
+
             // Hitung transaksi yang akan terpengaruh
             $transaksiDetailCount = \App\Models\TransaksiDetail::where('produk_id', $id)->count();
 
@@ -253,7 +253,7 @@ class ProdukController extends Controller
     {
         try {
             $produk = Produk::findOrFail($id);
-            
+
             $newStatus = $produk->status === 'aktif' ? 'nonaktif' : 'aktif';
             $produk->update(['status' => $newStatus]);
 
