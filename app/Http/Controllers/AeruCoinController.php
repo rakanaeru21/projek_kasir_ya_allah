@@ -21,17 +21,12 @@ class AeruCoinController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        $users = User::where('role', 'pengguna')
-                    ->where('is_active', true)
-                    ->orderBy('nama')
-                    ->get();
-
         $recentTransactions = AeruCoinTransaction::with(['user', 'kasir'])
                                                 ->latest()
                                                 ->limit(10)
                                                 ->get();
 
-        return view('kasir.aerucoin-topup', compact('users', 'recentTransactions'));
+        return view('kasir.aerucoin-topup', compact('recentTransactions'));
     }
 
     /**
@@ -40,13 +35,12 @@ class AeruCoinController extends Controller
     public function topup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
+            'member_number' => 'required|string',
             'cash_received' => 'required|numeric|min:1000',
             'amount' => 'required|numeric|min:1000',
             'description' => 'nullable|string|max:255',
         ], [
-            'user_id.required' => 'User harus dipilih',
-            'user_id.exists' => 'User tidak ditemukan',
+            'member_number.required' => 'Nomor member harus diisi',
             'cash_received.required' => 'Jumlah uang tunai harus diisi',
             'cash_received.numeric' => 'Jumlah uang tunai harus berupa angka',
             'cash_received.min' => 'Minimal topup Rp 1.000',
@@ -66,14 +60,16 @@ class AeruCoinController extends Controller
         try {
             DB::beginTransaction();
 
-            $user = User::findOrFail($request->user_id);
+            $user = User::where('nomor_telepon', $request->member_number)
+                       ->where('role', 'pengguna')
+                       ->where('is_active', true)
+                       ->first();
 
-            // Pastikan user yang dipilih adalah pengguna
-            if ($user->role !== 'pengguna') {
+            if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User yang dipilih bukan pengguna'
-                ], 400);
+                    'message' => 'Member tidak ditemukan'
+                ], 404);
             }
 
             // Tambah saldo AeruCoin ke user
@@ -105,6 +101,43 @@ class AeruCoinController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mendapatkan detail user berdasarkan nomor member (nomor telepon)
+     */
+    public function getUserByMember($memberNumber)
+    {
+        try {
+            $user = User::where('nomor_telepon', $memberNumber)
+                       ->where('role', 'pengguna')
+                       ->where('is_active', true)
+                       ->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $user->id,
+                    'nama' => $user->nama,
+                    'nomor_telepon' => $user->nomor_telepon,
+                    'current_balance' => number_format((float) $user->aerucoin_balance, 0, ',', '.'),
+                    'current_balance_raw' => $user->aerucoin_balance,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()

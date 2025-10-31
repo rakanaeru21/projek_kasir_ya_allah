@@ -640,13 +640,12 @@ body {
                     <form id="topupForm">
                         @csrf
                         <div class="form-group">
-                            <label for="user_id" class="form-label">Pilih User</label>
-                            <select name="user_id" id="user_id" class="form-control form-select" required>
-                                <option value="">-- Pilih User --</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->nama }} ({{ $user->nomor_telepon }})</option>
-                                @endforeach
-                            </select>
+                            <label for="member_number" class="form-label">Nomor Member</label>
+                            <input type="text" name="member_number" id="member_number" class="form-control"
+                                   placeholder="Masukkan nomor telepon member" required>
+                            <small style="color: var(--color-text-muted); font-size: 13px; margin-top: 6px; display: block;">
+                                <i class="fas fa-info-circle"></i> Gunakan nomor telepon sebagai nomor member
+                            </small>
                         </div>
 
                         <!-- User Info Display -->
@@ -740,7 +739,7 @@ body {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const userSelect = document.getElementById('user_id');
+            const memberNumberInput = document.getElementById('member_number');
             const userInfo = document.getElementById('userInfo');
             const topupForm = document.getElementById('topupForm');
             const alertContainer = document.getElementById('alert-container');
@@ -763,25 +762,36 @@ body {
                 sidebarOverlay.classList.remove('active');
             });
 
-            // Handle user selection
-            userSelect.addEventListener('change', function() {
-                const userId = this.value;
+            // Handle member number input (with debounce)
+            let timeout;
+            memberNumberInput.addEventListener('input', function() {
+                const memberNumber = this.value.trim();
 
-                if (userId) {
-                    fetch(`/aerucoin/user/${userId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                document.getElementById('userName').textContent = data.data.nama;
-                                document.getElementById('userPhone').textContent = data.data.nomor_telepon;
-                                document.getElementById('currentBalance').textContent = data.data.current_balance;
-                                userInfo.style.display = 'block';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showAlert('Terjadi kesalahan saat mengambil data user', 'error');
-                        });
+                clearTimeout(timeout);
+
+                if (memberNumber.length >= 3) {
+                    timeout = setTimeout(() => {
+                        fetch(`/aerucoin/user/by-member/${memberNumber}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('userName').textContent = data.data.nama;
+                                    document.getElementById('userPhone').textContent = data.data.nomor_telepon;
+                                    document.getElementById('currentBalance').textContent = data.data.current_balance;
+                                    userInfo.style.display = 'block';
+                                } else {
+                                    userInfo.style.display = 'none';
+                                    if (memberNumber.length > 0) {
+                                        showAlert('Member tidak ditemukan', 'error');
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                userInfo.style.display = 'none';
+                                showAlert('Terjadi kesalahan saat mencari member', 'error');
+                            });
+                    }, 500); // Debounce 500ms
                 } else {
                     userInfo.style.display = 'none';
                 }

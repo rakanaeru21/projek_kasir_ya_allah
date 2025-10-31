@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/aerucoin', [AeruCoinController::class, 'index'])->name('aerucoin.index');
         Route::post('/aerucoin/topup', [AeruCoinController::class, 'topup'])->name('aerucoin.topup');
         Route::get('/aerucoin/user/{id}', [AeruCoinController::class, 'getUserDetail'])->name('aerucoin.user.detail');
+        Route::get('/aerucoin/user/by-member/{memberNumber}', [AeruCoinController::class, 'getUserByMember'])->name('aerucoin.user.by-member');
         Route::get('/aerucoin/history', [AeruCoinController::class, 'history'])->name('aerucoin.history');
         Route::get('/aerucoin/check-balance/{phoneNumber}', [AeruCoinController::class, 'checkBalance'])->name('aerucoin.check-balance');
     });
