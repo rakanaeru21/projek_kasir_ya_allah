@@ -369,7 +369,7 @@
 
         .payment-methods {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
@@ -751,8 +751,100 @@
                                     <span class="payment-name">Kartu</span>
                                 </label>
                             </div>
+                            <div class="payment-option">
+                                <input type="radio"
+                                       id="aerucoin"
+                                       name="payment_method"
+                                       value="aerucoin"
+                                       class="payment-radio">
+                                <label for="aerucoin" class="payment-label">
+                                    <i class="fas fa-coins payment-icon"></i>
+                                    <span class="payment-name">AeruCoin</span>
+                                </label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio"
+                                       id="mixed"
+                                       name="payment_method"
+                                       value="mixed"
+                                       class="payment-radio">
+                                <label for="mixed" class="payment-label">
+                                    <i class="fas fa-credit-card payment-icon"></i>
+                                    <span class="payment-name">Campuran</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="form-error" id="error-payment_method"></div>
+                    </div>
+
+                    <!-- AeruCoin Balance Info -->
+                    <div class="aerucoin-balance-info" style="background: rgba(221, 136, 207, 0.1); border: 1px solid var(--color-primary); border-radius: 8px; padding: 16px; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <i class="fas fa-coins" style="color: var(--color-primary); margin-right: 8px;"></i>
+                            <strong style="color: var(--color-text);">Saldo AeruCoin Anda</strong>
+                        </div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-primary);">
+                            {{ number_format($aerucoinBalance, 0, ',', '.') }} AC
+                        </div>
+                        <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">
+                            @if($aerucoinBalance >= $total)
+                                ✅ Saldo mencukupi untuk pembayaran penuh
+                            @else
+                                ⚠️ Saldo tidak mencukupi untuk pembayaran penuh (kurang {{ number_format($total - $aerucoinBalance, 0, ',', '.') }} AC)
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Mixed Payment Options -->
+                    <div id="mixed-payment-options" style="display: none; background: var(--color-bg-alt); border-radius: 8px; padding: 16px; margin: 16px 0;">
+                        <h4 style="color: var(--color-text); margin-bottom: 16px;">
+                            <i class="fas fa-calculator"></i> Pembayaran Campuran
+                        </h4>
+
+                        <div class="form-group">
+                            <label class="form-label">Gunakan AeruCoin</label>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <input type="number"
+                                       id="aerucoin_amount"
+                                       name="aerucoin_amount"
+                                       class="form-input"
+                                       placeholder="Jumlah AeruCoin"
+                                       min="0"
+                                       max="{{ $aerucoinBalance }}"
+                                       step="1000"
+                                       style="flex: 1;">
+                                <button type="button"
+                                        id="use-max-aerucoin"
+                                        class="btn"
+                                        style="background: var(--color-primary); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
+                                    Max
+                                </button>
+                            </div>
+                            <small style="color: var(--color-text-muted); font-size: 12px;">
+                                Maksimal: {{ number_format($aerucoinBalance, 0, ',', '.') }} AC
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Metode Pembayaran Sisa</label>
+                            <select name="remaining_payment_method" id="remaining_payment_method" class="form-input">
+                                <option value="">Pilih metode pembayaran</option>
+                                <option value="cash">Tunai</option>
+                                <option value="transfer">Transfer</option>
+                                <option value="card">Kartu</option>
+                            </select>
+                        </div>
+
+                        <div id="payment-breakdown" style="background: rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 12px; margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: var(--color-text-muted);">AeruCoin:</span>
+                                <span id="aerucoin-payment-amount" style="color: var(--color-primary); font-weight: 600;">0 AC</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: var(--color-text-muted);">Sisa pembayaran:</span>
+                                <span id="remaining-payment-amount" style="color: var(--color-text); font-weight: 600;">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -864,6 +956,68 @@
             });
         });
 
+        // Constants for payment calculations
+        const totalAmount = {{ $total }};
+        const aerucoinBalance = {{ $aerucoinBalance }};
+
+        // Payment method handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+            const mixedPaymentOptions = document.getElementById('mixed-payment-options');
+            const aerucoinAmountInput = document.getElementById('aerucoin_amount');
+            const useMaxAerucoinBtn = document.getElementById('use-max-aerucoin');
+            const remainingPaymentMethodSelect = document.getElementById('remaining_payment_method');
+
+            // Handle payment method changes
+            paymentMethods.forEach(method => {
+                method.addEventListener('change', function() {
+                    if (this.value === 'mixed') {
+                        mixedPaymentOptions.style.display = 'block';
+                        updatePaymentBreakdown();
+                    } else {
+                        mixedPaymentOptions.style.display = 'none';
+                        // Reset mixed payment fields
+                        if (aerucoinAmountInput) aerucoinAmountInput.value = '';
+                        if (remainingPaymentMethodSelect) remainingPaymentMethodSelect.value = '';
+                    }
+                });
+            });
+
+            // Handle AeruCoin amount changes
+            if (aerucoinAmountInput) {
+                aerucoinAmountInput.addEventListener('input', updatePaymentBreakdown);
+            }
+
+            // Use max AeruCoin button
+            if (useMaxAerucoinBtn) {
+                useMaxAerucoinBtn.addEventListener('click', function() {
+                    const maxAmount = Math.min(aerucoinBalance, totalAmount);
+                    aerucoinAmountInput.value = maxAmount;
+                    updatePaymentBreakdown();
+                });
+            }
+
+            function updatePaymentBreakdown() {
+                if (!mixedPaymentOptions || mixedPaymentOptions.style.display === 'none') return;
+
+                const aerucoinAmount = parseFloat(aerucoinAmountInput.value) || 0;
+                const remainingAmount = Math.max(0, totalAmount - aerucoinAmount);
+
+                // Update display
+                document.getElementById('aerucoin-payment-amount').textContent =
+                    new Intl.NumberFormat('id-ID').format(aerucoinAmount) + ' AC';
+                document.getElementById('remaining-payment-amount').textContent =
+                    'Rp ' + new Intl.NumberFormat('id-ID').format(remainingAmount);
+
+                // Make remaining payment method required if there's remaining amount
+                if (remainingAmount > 0) {
+                    remainingPaymentMethodSelect.required = true;
+                } else {
+                    remainingPaymentMethodSelect.required = false;
+                }
+            }
+        });
+
         // Handle form submission
         document.getElementById('checkoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -874,6 +1028,37 @@
             // Clear previous errors
             document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
             document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+
+            // Validate payment method
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (!paymentMethod) {
+                showToast('Silakan pilih metode pembayaran', 'error');
+                return;
+            }
+
+            // Validate mixed payment
+            if (paymentMethod.value === 'mixed') {
+                const aerucoinAmount = parseFloat(document.getElementById('aerucoin_amount').value) || 0;
+                const remainingAmount = totalAmount - aerucoinAmount;
+
+                if (aerucoinAmount > aerucoinBalance) {
+                    showToast('Jumlah AeruCoin melebihi saldo yang tersedia', 'error');
+                    return;
+                }
+
+                if (remainingAmount > 0 && !document.getElementById('remaining_payment_method').value) {
+                    showToast('Silakan pilih metode pembayaran untuk sisa pembayaran', 'error');
+                    return;
+                }
+            }
+
+            // Validate AeruCoin only payment
+            if (paymentMethod.value === 'aerucoin') {
+                if (aerucoinBalance < totalAmount) {
+                    showToast('Saldo AeruCoin tidak mencukupi untuk pembayaran penuh', 'error');
+                    return;
+                }
+            }
 
             // Disable button and show loading
             btn.disabled = true;

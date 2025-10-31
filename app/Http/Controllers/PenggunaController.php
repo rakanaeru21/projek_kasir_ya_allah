@@ -385,7 +385,10 @@ class PenggunaController extends Controller
         $tax = $subtotal * 0.1;
         $total = $subtotal + $tax;
 
-        return view('pengguna.checkout', compact('cart', 'subtotal', 'tax', 'total'));
+        // Get user's AeruCoin balance
+        $aerucoinBalance = Auth::user()->aerucoin_balance ?? 0;
+
+        return view('pengguna.checkout', compact('cart', 'subtotal', 'tax', 'total', 'aerucoinBalance'));
     }
 
     /**
@@ -393,11 +396,19 @@ class PenggunaController extends Controller
      */
     public function processCheckout(Request $request)
     {
-        $request->validate([
+        $validationRules = [
             'customer_name' => 'required|string|max:255',
-            'payment_method' => 'required|in:cash,transfer,card',
+            'payment_method' => 'required|in:cash,transfer,card,aerucoin,mixed',
             'notes' => 'nullable|string|max:1000'
-        ]);
+        ];
+
+        // Add validation for mixed payment
+        if ($request->payment_method === 'mixed') {
+            $validationRules['aerucoin_amount'] = 'required|numeric|min:0';
+            $validationRules['remaining_payment_method'] = 'required|in:cash,transfer,card';
+        }
+
+        $request->validate($validationRules);
 
         $cart = Session::get('cart', []);
 
@@ -407,6 +418,8 @@ class PenggunaController extends Controller
                 'message' => 'Keranjang kosong'
             ]);
         }
+
+        $user = Auth::user();
 
         DB::beginTransaction();
 
@@ -435,18 +448,64 @@ class PenggunaController extends Controller
             $tax = $subtotal * 0.1;
             $total = $subtotal + $tax;
 
+            // Handle AeruCoin payments
+            $aerucoinUsed = 0;
+            $remainingAmount = $total;
+            $finalPaymentMethod = $request->payment_method;
+
+            if ($request->payment_method === 'aerucoin') {
+                // Full AeruCoin payment
+                if ($user->aerucoin_balance < $total) {
+                    throw new \Exception('Saldo AeruCoin tidak mencukupi untuk pembayaran penuh');
+                }
+                $aerucoinUsed = $total;
+                $remainingAmount = 0;
+            } elseif ($request->payment_method === 'mixed') {
+                // Mixed payment
+                $aerucoinUsed = min($request->aerucoin_amount, $user->aerucoin_balance, $total);
+                $remainingAmount = $total - $aerucoinUsed;
+                $finalPaymentMethod = $request->remaining_payment_method;
+
+                if ($aerucoinUsed > $user->aerucoin_balance) {
+                    throw new \Exception('Jumlah AeruCoin melebihi saldo yang tersedia');
+                }
+
+                if ($remainingAmount > 0 && !$request->remaining_payment_method) {
+                    throw new \Exception('Metode pembayaran untuk sisa pembayaran harus dipilih');
+                }
+            }
+
+            // Deduct AeruCoin if used
+            if ($aerucoinUsed > 0) {
+                $user->subtractAeruCoin($aerucoinUsed);
+            }
+
             // Buat transaksi
             $transaksi = Transaksi::create([
                 'kode_transaksi' => 'TRX' . date('YmdHis') . rand(100, 999),
                 'member_id' => Auth::id(), // Member yang melakukan transaksi
                 'customer_name' => $request->customer_name,
-                'payment_method' => $request->payment_method,
+                'payment_method' => $finalPaymentMethod,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total_amount' => $total,
+                'aerucoin_used' => $aerucoinUsed,
                 'status' => 'waiting_confirmation', // Perlu konfirmasi kasir
                 'notes' => $request->notes
             ]);
+
+            // Create AeruCoin transaction record if AeruCoin was used
+            if ($aerucoinUsed > 0) {
+                \App\Models\AeruCoinTransaction::create([
+                    'user_id' => $user->id,
+                    'kasir_id' => null, // Will be updated when kasir confirms
+                    'amount' => $aerucoinUsed,
+                    'cash_received' => 0,
+                    'type' => 'usage',
+                    'description' => "Pembayaran transaksi {$transaksi->kode_transaksi}",
+                    'reference_id' => $transaksi->id,
+                ]);
+            }
 
             // Buat detail transaksi (stok belum dikurangi karena masih menunggu konfirmasi)
             foreach ($cart as $item) {
@@ -474,7 +533,9 @@ class PenggunaController extends Controller
                 'success' => true,
                 'message' => 'Transaksi berhasil diproses',
                 'transaksi_id' => $transaksi->id,
-                'kode_transaksi' => $transaksi->kode_transaksi
+                'kode_transaksi' => $transaksi->kode_transaksi,
+                'aerucoin_used' => $aerucoinUsed,
+                'remaining_amount' => $remainingAmount
             ]);
 
         } catch (\Exception $e) {
