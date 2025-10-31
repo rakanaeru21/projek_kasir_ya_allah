@@ -431,6 +431,33 @@ body {
     box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
 }
 
+.btn-toggle-status {
+    transition: all 0.3s ease;
+}
+
+.btn-toggle-status:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.btn-toggle-status.activate {
+    background: #4CAF50 !important;
+}
+
+.btn-toggle-status.activate:hover {
+    background: #45a049 !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-toggle-status.deactivate {
+    background: #FF9800 !important;
+}
+
+.btn-toggle-status.deactivate:hover {
+    background: #F57C00 !important;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
 .empty-state {
     padding: 60px 40px;
     text-align: center;
@@ -1044,6 +1071,9 @@ body {
                                 <button onclick="editProduk({{ $produk->id }})" class="btn-action btn-edit">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
+                                <button onclick="toggleStatusProduk({{ $produk->id }})" class="btn-action btn-toggle-status {{ $produk->status == 'aktif' ? 'deactivate' : 'activate' }}">
+                                    <i class="fas fa-{{ $produk->status == 'aktif' ? 'eye-slash' : 'eye' }}"></i> {{ $produk->status == 'aktif' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                </button>
                                 <button onclick="hapusProduk({{ $produk->id }})" class="btn-action btn-delete">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
@@ -1406,11 +1436,100 @@ body {
                     alert(result.message);
                     location.reload();
                 } else {
-                    alert(result.message || 'Gagal menghapus produk');
+                    // Jika error karena produk sudah digunakan dalam transaksi
+                    if (result.suggestion === 'force_delete_with_consequences') {
+                        showForceDeleteConfirmation(id, result.message, result.transaction_count);
+                    } else {
+                        alert(result.message || 'Gagal menghapus produk');
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat menghapus produk');
+            }
+        }
+
+        function showForceDeleteConfirmation(id, message, transactionCount) {
+            const userChoice = confirm(
+                message + '\n\n' +
+                '⚠️ APAKAH ANDA YAKIN INGIN TETAP MENGHAPUS?\n\n' +
+                'KONSEKUENSI:\n' +
+                `• ${transactionCount} data transaksi akan terpengaruh\n` +
+                '• Data riwayat transaksi akan menunjukkan "PRODUK DIHAPUS"\n' +
+                '• Laporan yang melibatkan produk ini mungkin terganggu\n' +
+                '• Aksi ini TIDAK DAPAT DIBATALKAN!\n\n' +
+                'Pilih "OK" untuk HAPUS PAKSA atau "Cancel" untuk membatalkan.'
+            );
+            
+            if (userChoice) {
+                forceDeleteProduk(id);
+            }
+        }
+
+        async function forceDeleteProduk(id) {
+            // Konfirmasi terakhir
+            const finalConfirm = confirm(
+                '🚨 KONFIRMASI TERAKHIR 🚨\n\n' +
+                'Anda akan menghapus produk secara PERMANEN!\n' +
+                'Data transaksi akan diubah menjadi "PRODUK DIHAPUS".\n\n' +
+                'Ketik "HAPUS" di prompt berikutnya untuk konfirmasi:'
+            );
+
+            if (!finalConfirm) {
+                return;
+            }
+
+            const confirmText = prompt('Ketik "HAPUS" (tanpa tanda kutip) untuk konfirmasi penghapusan:');
+            
+            if (confirmText !== 'HAPUS') {
+                alert('Konfirmasi tidak sesuai. Penghapusan dibatalkan.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/produk/${id}/force`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ ' + result.message);
+                    location.reload();
+                } else {
+                    alert('❌ ' + (result.message || 'Gagal menghapus produk secara paksa'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Terjadi kesalahan saat menghapus produk secara paksa');
+            }
+        }
+
+        async function toggleStatusProduk(id) {
+            try {
+                const response = await fetch(`/admin/produk/${id}/toggle-status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert(result.message || 'Gagal mengubah status produk');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengubah status produk');
             }
         }
 
@@ -1570,6 +1689,9 @@ body {
                         <td style="text-align: center; white-space: nowrap;">
                             <button onclick="editProduk(${produk.id})" class="btn-action btn-edit">
                                 <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="toggleStatusProduk(${produk.id})" class="btn-action btn-toggle-status ${produk.status === 'aktif' ? 'deactivate' : 'activate'}">
+                                <i class="fas fa-${produk.status === 'aktif' ? 'eye-slash' : 'eye'}"></i> ${produk.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
                             </button>
                             <button onclick="hapusProduk(${produk.id})" class="btn-action btn-delete">
                                 <i class="fas fa-trash"></i> Hapus

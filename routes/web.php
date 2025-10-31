@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/produk/{id}', [ProdukController::class, 'show'])->name('admin.produk.show');
         Route::put('/admin/produk/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
         Route::delete('/admin/produk/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
+        Route::delete('/admin/produk/{id}/force', [ProdukController::class, 'forceDestroy'])->name('admin.produk.force-destroy');
+        Route::patch('/admin/produk/{id}/toggle-status', [ProdukController::class, 'toggleStatus'])->name('admin.produk.toggle-status');
 
         // Promo routes
         Route::get('/admin/promo', [PromoController::class, 'index'])->name('admin.promo');

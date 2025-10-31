@@ -18,8 +18,12 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        // Ambil semua produk yang tersedia (stok > 0) dengan promo info
-        $produks = Produk::with('promos')->where('stok', '>', 0)->orderBy('nama_produk', 'asc')->get();
+        // Ambil semua produk yang tersedia (aktif dan stok > 0) dengan promo info
+        $produks = Produk::with('promos')
+            ->where('status', 'aktif')
+            ->where('stok', '>', 0)
+            ->orderBy('nama_produk', 'asc')
+            ->get();
 
         // Update harga diskon untuk setiap produk berdasarkan promo aktif
         foreach ($produks as $produk) {
@@ -85,9 +89,16 @@ class TransaksiController extends Controller
                             ->first();
             }
 
-            // Validasi stok produk
+            // Validasi stok dan status produk
             foreach ($request->items as $item) {
                 $produk = Produk::findOrFail($item['id']);
+                
+                // Cek apakah produk masih aktif
+                if ($produk->status !== 'aktif') {
+                    throw new \Exception("Produk {$produk->nama_produk} sudah tidak aktif dan tidak dapat dijual!");
+                }
+                
+                // Cek stok
                 if ($produk->stok < $item['quantity']) {
                     throw new \Exception("Stok produk {$produk->nama_produk} tidak mencukupi! Stok tersedia: {$produk->stok}");
                 }
@@ -175,7 +186,9 @@ class TransaksiController extends Controller
     {
         $search = $request->get('search');
 
-        $produks = Produk::with('promos')->where('stok', '>', 0)
+        $produks = Produk::with('promos')
+            ->where('status', 'aktif')
+            ->where('stok', '>', 0)
             ->where(function($query) use ($search) {
                 $query->where('nama_produk', 'like', "%{$search}%")
                       ->orWhere('kode_produk', 'like', "%{$search}%");
@@ -196,7 +209,9 @@ class TransaksiController extends Controller
      */
     public function getProduct($id)
     {
-        $produk = Produk::with('promos')->findOrFail($id);
+        $produk = Produk::with('promos')
+            ->where('status', 'aktif')
+            ->findOrFail($id);
 
         // Update harga diskon berdasarkan promo aktif
         $produk->updateDiscountPrice();
@@ -217,7 +232,7 @@ class TransaksiController extends Controller
     }
 
     /**
-     * Validasi stok produk
+     * Validasi stok dan status produk
      */
     public function checkStock(Request $request)
     {
@@ -231,12 +246,27 @@ class TransaksiController extends Controller
 
         foreach ($request->items as $item) {
             $produk = Produk::findOrFail($item['id']);
+            
+            // Cek status produk
+            if ($produk->status !== 'aktif') {
+                $stockErrors[] = [
+                    'product_id' => $item['id'],
+                    'product_name' => $produk->nama_produk,
+                    'error_type' => 'inactive',
+                    'message' => 'Produk sudah tidak aktif dan tidak dapat dijual'
+                ];
+                continue;
+            }
+            
+            // Cek stok
             if ($produk->stok < $item['quantity']) {
                 $stockErrors[] = [
                     'product_id' => $item['id'],
                     'product_name' => $produk->nama_produk,
+                    'error_type' => 'insufficient_stock',
                     'requested' => $item['quantity'],
-                    'available' => $produk->stok
+                    'available' => $produk->stok,
+                    'message' => "Stok tidak mencukupi. Tersedia: {$produk->stok}"
                 ];
             }
         }

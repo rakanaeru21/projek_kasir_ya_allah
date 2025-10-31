@@ -133,7 +133,16 @@ class PenggunaController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $produk = Produk::findOrFail($request->produk_id);
+        $produk = Produk::where('id', $request->produk_id)
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$produk) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan atau sudah tidak aktif'
+            ]);
+        }
 
         // Cek stok
         if ($produk->stok < $request->quantity) {
@@ -196,7 +205,10 @@ class PenggunaController extends Controller
 
         // Update informasi produk di keranjang
         foreach ($cart as $key => $item) {
-            $produk = Produk::find($item['id']);
+            $produk = Produk::where('id', $item['id'])
+                ->where('status', 'aktif')
+                ->first();
+                
             if ($produk) {
                 $produk->updateDiscountPrice();
                 $cart[$key]['harga'] = $produk->getFinalPrice();
@@ -208,7 +220,7 @@ class PenggunaController extends Controller
                     $cart[$key]['quantity'] = $produk->stok;
                 }
             } else {
-                // Produk tidak ditemukan, hapus dari keranjang
+                // Produk tidak ditemukan atau sudah nonaktif, hapus dari keranjang
                 unset($cart[$key]);
             }
         }
@@ -245,9 +257,18 @@ class PenggunaController extends Controller
         } else {
             // Update quantity
             if (isset($cart[$productKey])) {
-                $produk = Produk::find($productKey);
+                $produk = Produk::where('id', $productKey)
+                    ->where('status', 'aktif')
+                    ->first();
 
-                if ($produk && $request->quantity <= $produk->stok) {
+                if (!$produk) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Produk sudah tidak aktif dan dihapus dari keranjang'
+                    ]);
+                }
+
+                if ($request->quantity <= $produk->stok) {
                     $cart[$productKey]['quantity'] = $request->quantity;
                 } else {
                     return response()->json([
@@ -308,10 +329,18 @@ class PenggunaController extends Controller
                 ->with('error', 'Keranjang kosong. Silakan pilih produk terlebih dahulu.');
         }
 
-        // Update informasi produk dan cek stok
+        // Update informasi produk dan cek stok serta status
         foreach ($cart as $key => $item) {
-            $produk = Produk::find($item['id']);
-            if (!$produk || $produk->stok < $item['quantity']) {
+            $produk = Produk::where('id', $item['id'])
+                ->where('status', 'aktif')
+                ->first();
+                
+            if (!$produk) {
+                return redirect()->route('pengguna.keranjang')
+                    ->with('error', 'Ada produk yang sudah tidak aktif. Silakan periksa keranjang.');
+            }
+            
+            if ($produk->stok < $item['quantity']) {
                 return redirect()->route('pengguna.keranjang')
                     ->with('error', 'Ada produk yang stoknya tidak mencukupi. Silakan periksa keranjang.');
             }
@@ -351,10 +380,18 @@ class PenggunaController extends Controller
         DB::beginTransaction();
 
         try {
-            // Cek stok semua produk
+            // Cek stok dan status semua produk
             foreach ($cart as $item) {
-                $produk = Produk::lockForUpdate()->find($item['id']);
-                if (!$produk || $produk->stok < $item['quantity']) {
+                $produk = Produk::lockForUpdate()
+                    ->where('id', $item['id'])
+                    ->where('status', 'aktif')
+                    ->first();
+                    
+                if (!$produk) {
+                    throw new \Exception("Produk {$item['nama_produk']} sudah tidak aktif atau tidak ditemukan");
+                }
+                
+                if ($produk->stok < $item['quantity']) {
                     throw new \Exception("Stok produk {$item['nama_produk']} tidak mencukupi");
                 }
             }

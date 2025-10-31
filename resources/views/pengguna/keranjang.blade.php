@@ -740,11 +740,28 @@
                 existingToast.remove();
             }
 
+            let backgroundColor, iconName;
+            switch(type) {
+                case 'success':
+                    backgroundColor = 'var(--color-success)';
+                    iconName = 'check-circle';
+                    break;
+                case 'warning':
+                    backgroundColor = 'var(--color-warning)';
+                    iconName = 'exclamation-triangle';
+                    break;
+                case 'error':
+                default:
+                    backgroundColor = 'var(--color-error)';
+                    iconName = 'exclamation-circle';
+                    break;
+            }
+
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
-            toast.style.background = type === 'success' ? 'var(--color-success)' : 'var(--color-error)';
+            toast.style.background = backgroundColor;
             toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <i class="fas fa-${iconName}"></i>
                 ${message}
             `;
 
@@ -761,8 +778,56 @@
                         toast.remove();
                     }
                 }, 300);
-            }, 3000);
+            }, 4000);
         }
+
+        // Auto-check product status every 30 seconds
+        function checkProductStatus() {
+            const currentCartCount = {{ count($cart) }};
+            
+            // Only check if cart is not empty
+            if (currentCartCount === 0) return;
+
+            fetch('{{ route("pengguna.keranjang") }}', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('Network response was not ok');
+            })
+            .then(html => {
+                // Check if page content has changed (indicating product removal)
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const newCartItems = tempDiv.querySelectorAll('.cart-item').length;
+                const currentCartItems = document.querySelectorAll('.cart-item').length;
+                
+                if (newCartItems < currentCartItems) {
+                    showToast('⚠️ Beberapa produk dalam keranjang sudah tidak tersedia dan telah dihapus otomatis.', 'warning');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking product status:', error);
+            });
+        }
+
+        // Start auto-check every 30 seconds
+        setInterval(checkProductStatus, 30000);
+
+        // Check immediately when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check after 2 seconds to allow page to fully load
+            setTimeout(checkProductStatus, 2000);
+        });
     </script>
 </body>
 </html>

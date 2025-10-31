@@ -176,6 +176,18 @@ class ProdukController extends Controller
         try {
             $produk = Produk::findOrFail($id);
 
+            // Cek apakah produk sudah digunakan dalam transaksi
+            $transaksiDetailCount = \App\Models\TransaksiDetail::where('produk_id', $id)->count();
+
+            if ($transaksiDetailCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "PERINGATAN: Produk ini sudah digunakan dalam {$transaksiDetailCount} transaksi!\n\nJika Anda menghapus produk ini, data riwayat transaksi akan terganggu dan dapat menyebabkan error sistem.",
+                    'transaction_count' => $transaksiDetailCount,
+                    'suggestion' => 'force_delete_with_consequences'
+                ], 400);
+            }
+
             // Hapus gambar jika ada
             if ($produk->gambar && file_exists(public_path($produk->gambar))) {
                 unlink(public_path($produk->gambar));
@@ -191,6 +203,69 @@ class ProdukController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus produk: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Force delete produk meskipun sudah digunakan dalam transaksi
+     * Dengan foreign key constraint SET NULL, data transaksi akan tetap aman
+     */
+    public function forceDestroy($id)
+    {
+        try {
+            $produk = Produk::findOrFail($id);
+            
+            // Hitung transaksi yang akan terpengaruh
+            $transaksiDetailCount = \App\Models\TransaksiDetail::where('produk_id', $id)->count();
+
+            // Update informasi produk di transaksi_details sebelum menghapus
+            // untuk mempertahankan informasi historis
+            \App\Models\TransaksiDetail::where('produk_id', $id)->update([
+                'nama_produk' => $produk->nama_produk . ' (PRODUK DIHAPUS)',
+                'kategori_produk' => $produk->kategori . ' (DIHAPUS)'
+            ]);
+
+            // Hapus gambar jika ada
+            if ($produk->gambar && file_exists(public_path($produk->gambar))) {
+                unlink(public_path($produk->gambar));
+            }
+
+            // Hapus produk - foreign key constraint akan otomatis set produk_id ke NULL
+            $produk->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Produk berhasil dihapus paksa. {$transaksiDetailCount} data transaksi telah diperbarui dengan keterangan 'PRODUK DIHAPUS'."
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus produk secara paksa: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle status produk (aktif/nonaktif)
+     */
+    public function toggleStatus($id)
+    {
+        try {
+            $produk = Produk::findOrFail($id);
+            
+            $newStatus = $produk->status === 'aktif' ? 'nonaktif' : 'aktif';
+            $produk->update(['status' => $newStatus]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Produk berhasil di" . ($newStatus === 'nonaktif' ? 'nonaktifkan' : 'aktifkan'),
+                'new_status' => $newStatus
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengubah status produk: ' . $e->getMessage()
             ], 500);
         }
     }

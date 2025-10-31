@@ -1539,9 +1539,15 @@
             .then(response => response.json())
             .then(data => {
                 if (!data.valid && data.errors && data.errors.length > 0) {
-                    let errorMsg = 'Stok tidak mencukupi untuk:\n';
+                    let errorMsg = 'Terdapat masalah dengan produk:\n';
                     data.errors.forEach(error => {
-                        errorMsg += `- ${error.product_name}: diminta ${error.requested}, tersedia ${error.available}\n`;
+                        if (error.error_type === 'inactive') {
+                            errorMsg += `- ${error.product_name}: ${error.message}\n`;
+                        } else if (error.error_type === 'insufficient_stock') {
+                            errorMsg += `- ${error.product_name}: diminta ${error.requested}, tersedia ${error.available}\n`;
+                        } else {
+                            errorMsg += `- ${error.product_name}: ${error.message}\n`;
+                        }
                     });
                     throw new Error(errorMsg);
                 }
